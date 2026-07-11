@@ -8,7 +8,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <style>
-    /* CSS SAME AS YOUR PREVIOUS INDEX.HTML */
     :root { --bg: #09090b; --header: rgba(18, 18, 22, 0.9); --card-bg: rgba(22, 22, 26, 0.6); --primary: #e50914; --primary-glow: rgba(229, 9, 20, 0.35); --text: #ffffff; --text-muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08); }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
     body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
@@ -17,11 +16,23 @@
     .header { background: var(--header); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
     .header .logo { font-size: 24px; font-weight: 900; color: var(--primary); cursor: pointer; text-transform: uppercase; }
     .search-bar { flex: 1; margin: 0 40px; max-width: 500px; position: relative; }
-    .search-bar input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid var(--border); border-radius: 30px; background: rgba(30, 30, 35, 0.6); color: white; }
+    .search-bar input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid var(--border); border-radius: 30px; background: rgba(30, 30, 35, 0.6); color: white; outline: none; }
     .search-bar i { position: absolute; left: 18px; top: 15px; color: #a1a1aa; }
+    
     .header-right { display: flex; align-items: center; gap: 15px; }
     .nav-btn { background: none; border: 1px solid var(--border); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+    
+    /* THREE DOTS & SIDEBAR MENU CSS */
+    .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); transition: 0.2s; margin-left: 10px; }
+    .menu-btn:hover { transform: scale(1.1); }
+    .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: right 0.3s ease; z-index: 1000; overflow-y: auto; border-left: 1px solid var(--border); backdrop-filter: blur(20px); }
+    .sidebar.open { right: 0; }
+    .sidebar h3 { font-size: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; }
+    .sidebar a { display: flex; align-items: center; gap: 12px; color: white; padding: 12px 15px; text-decoration: none; margin: 8px 0; border-radius: 8px; font-size: 15px; font-weight: bold; transition: 0.2s; }
+    .sidebar a:hover { background: rgba(229, 9, 20, 0.1); color: var(--primary); padding-left: 20px; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; backdrop-filter: blur(4px); }
+    .overlay.show { display: block; }
     
     .section-title { padding: 40px 30px 10px 30px; font-size: 26px; text-transform: uppercase; color: #fff; font-weight: 800; }
     .section-title span { color: var(--primary); }
@@ -49,8 +60,10 @@
     .modal-box { background: #121214; border: 1px solid var(--border); padding: 40px; border-radius: 16px; text-align: center; width: 100%; max-width: 440px; position: relative; }
     .modal-box h3 { color: var(--primary); margin-bottom: 15px; }
     .modal-box input { width: 100%; padding: 14px; margin-bottom: 15px; background: #1a1a1f; border: 1px solid var(--border); color: white; border-radius: 8px; }
-    .modal-box button { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; margin: 8px 0; cursor: pointer; font-weight: bold; width: 100%; }
-    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; }
+    .modal-box button { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; margin: 8px 0; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; }
+    .modal-box button:hover { background: #b8070e; }
+    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; transition: 0.2s; }
+    .close-modal:hover { color: white; }
 
     @media (max-width: 768px) {
       .header { padding: 12px 15px; flex-wrap: wrap; gap: 12px; }
@@ -70,12 +83,26 @@
       <i class="fa-solid fa-magnifying-glass"></i>
     </div>
     <div class="header-right">
-      <button class="nav-btn" onclick="openPremiumLoginModal()"><i class="fa-solid fa-gem" style="color:#ffd700;"></i> Premium Login</button>
+      <button class="nav-btn" onclick="openPremiumLoginModal()"><i class="fa-solid fa-gem" style="color:#ffd700;"></i> Premium</button>
+      <!-- THREE DOTS ADDED HERE -->
+      <span class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></span>
     </div>
   </div>
 
+  <!-- SIDEBAR ADDED HERE -->
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <h3>Filters Menu</h3>
+    <a href="#" onclick="showAllPosts()"><i class="fa-solid fa-house"></i> All Posts</a>
+    <a href="#" onclick="showSidebarSection('category')"><i class="fa-solid fa-layer-group"></i> Categories</a>
+    <a href="#" onclick="showSidebarSection('genre')"><i class="fa-solid fa-masks-theater"></i> Genres</a>
+    <a href="#" onclick="showSidebarSection('az')"><i class="fa-solid fa-arrow-down-a-z"></i> A2Z List</a>
+    <a href="#" id="tgChannel" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Channel</a>
+    <a href="#" id="tgGroup" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Group</a>
+  </div>
+
   <div id="mainContent">
-    <h2 class="section-title">All <span>Anime Series</span></h2>
+    <h2 class="section-title" id="gridTitle">All <span>Anime Series</span></h2>
     <div id="postsGrid" class="posts-grid"></div>
     
     <div id="detailPage" class="detail-page">
@@ -97,9 +124,13 @@
     }
 
     async function loadApp() {
-      // Fetch Settings
+      // Fetch Settings & Set Telegram Links
       const { data: setts } = await supabaseClient.from('settings').select('*').single();
-      if(setts) settingsData = setts;
+      if(setts) {
+        settingsData = setts;
+        document.getElementById("tgChannel").href = setts.channel_link || "#";
+        document.getElementById("tgGroup").href = setts.group_link || "#";
+      }
 
       // Fetch Posts
       const { data: posts } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
@@ -110,7 +141,12 @@
     }
 
     function renderPosts(posts) {
-      document.getElementById("postsGrid").innerHTML = posts.map(p => `
+      const grid = document.getElementById("postsGrid");
+      if (posts.length === 0) {
+        grid.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:100px 0; color:#777;'>Koi content nahi mila.</div>";
+        return;
+      }
+      grid.innerHTML = posts.map(p => `
         <div class="post-card" onclick="showDetail('${p.id}')">
           <img src="${p.image_url}" alt="${p.name}">
           <span class="category-tag">${p.category || 'Anime'}</span>
@@ -124,9 +160,73 @@
       renderPosts(allPosts.filter(p => p.name.toLowerCase().includes(term)));
     }
 
+    /* --- SIDEBAR & FILTER LOGIC --- */
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("show");
+    }
+
+    function showAllPosts() {
+      toggleSidebar();
+      document.getElementById("gridTitle").innerHTML = "All <span>Anime Series</span>";
+      renderPosts(allPosts);
+    }
+
+    function showSidebarSection(type) {
+      toggleSidebar();
+      if (type === "category") {
+        const categories = [...new Set(allPosts.map(p => p.category).filter(Boolean))];
+        showModal(`
+          <span class="close-modal" onclick="closeModal()">&times;</span>
+          <h3 style="margin-bottom:15px;">Categories</h3>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            ${categories.map(cat => `<button style="margin: 4px 0;" onclick="filterByCategory('${cat}')">${cat}</button>`).join("")}
+          </div>
+        `);
+      } else if (type === "genre") {
+        const allGenres = allPosts.flatMap(p => (p.genres || "").split(/[,;\-_]/).map(g => g.trim()).filter(Boolean));
+        const uniqueGenres = [...new Set(allGenres)];
+        showModal(`
+          <span class="close-modal" onclick="closeModal()">&times;</span>
+          <h3 style="margin-bottom:15px;">Genres</h3>
+          <div style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto; padding-right:5px;">
+            ${uniqueGenres.map(g => `<button style="margin: 4px 0;" onclick="filterByGenre('${g}')">${g}</button>`).join("")}
+          </div>
+        `);
+      } else if (type === "az") {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+        showModal(`
+          <span class="close-modal" onclick="closeModal()">&times;</span>
+          <h3 style="margin-bottom:15px;">A2Z Filter</h3>
+          <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap:8px;">
+            ${letters.map(l => `<button style="width:100%; margin:0; padding:10px 0;" onclick="filterByLetter('${l}')">${l}</button>`).join("")}
+          </div>
+        `);
+      }
+    }
+
+    function filterByCategory(cat) {
+      closeModal();
+      document.getElementById("gridTitle").innerHTML = `Category: <span>${cat}</span>`;
+      renderPosts(allPosts.filter(p => p.category === cat));
+    }
+
+    function filterByGenre(genre) {
+      closeModal();
+      document.getElementById("gridTitle").innerHTML = `Genre: <span>${genre}</span>`;
+      renderPosts(allPosts.filter(p => (p.genres || "").toLowerCase().includes(genre.toLowerCase())));
+    }
+
+    function filterByLetter(letter) {
+      closeModal();
+      document.getElementById("gridTitle").innerHTML = `Starting Letter: <span>${letter}</span>`;
+      renderPosts(allPosts.filter(p => p.name.toUpperCase().startsWith(letter)));
+    }
+
+    /* --- DETAILS & EPISODE LOGIC --- */
     async function showDetail(postId) {
       document.getElementById("postsGrid").style.display = "none";
-      document.querySelector(".section-title").style.display = "none";
+      document.getElementById("gridTitle").style.display = "none";
       document.getElementById("detailPage").classList.add("active");
 
       const post = allPosts.find(p => p.id === postId);
@@ -153,11 +253,10 @@
 
     function showHome() {
       document.getElementById("postsGrid").style.display = "grid";
-      document.querySelector(".section-title").style.display = "block";
+      document.getElementById("gridTitle").style.display = "block";
       document.getElementById("detailPage").classList.remove("active");
     }
 
-    // Modal Handler for Episodes
     function handleEpisode(playLink, shortLink) {
       showModal(`
         <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -168,15 +267,13 @@
     }
 
     async function playVideo(playLink) {
-      // Pehle check karenge agar user Premium active hai
       const userEmail = localStorage.getItem('premium_email');
       const localDevice = localStorage.getItem('device_id');
 
       if (userEmail && localDevice) {
-        // Database se verify karo banned to nahi ho gaya device issue ki wajah se
         const { data } = await supabaseClient.from('premium_users').select('*').eq('email', userEmail).single();
         if (data && !data.is_banned && data.device_id === localDevice) {
-           window.open(playLink, '_blank'); // Premium bypass direct play
+           window.open(playLink, '_blank'); 
            closeModal();
            return;
         } else if (data && data.is_banned) {
@@ -187,7 +284,6 @@
         }
       }
 
-      // Agar normal user hai ya premium fail ho gaya toh password maango
       const pass = prompt("Enter Global Streaming Password:");
       if (pass === settingsData.player_password) {
         window.open(playLink, '_blank');
@@ -197,7 +293,7 @@
       closeModal();
     }
 
-    // STRICT PREMIUM MULTI-DEVICE BAN SYSTEM
+    /* --- PREMIUM LOGIN LOGIC --- */
     function openPremiumLoginModal() {
       if(localStorage.getItem('premium_email')) {
         alert(`You are already logged in as ${localStorage.getItem('premium_email')}`);
@@ -223,23 +319,19 @@
       if (data.is_banned) return alert("Account has been BANNED for violating multiple device policy.");
       if (new Date(data.expires_at) < new Date()) return alert("Your Premium validity has expired.");
 
-      // Check Device ID Rule
       let currentDevice = localStorage.getItem('device_id');
       if (!currentDevice) {
         currentDevice = generateUUID();
         localStorage.setItem('device_id', currentDevice);
       }
 
-      // Agar data me pehle se device_id hai aur wo current waley se match nahi karti = FRAUD (DOOSRA USER)
       if (data.device_id && data.device_id !== currentDevice) {
-         // Instant Ban
          await supabaseClient.from('premium_users').update({ is_banned: true }).eq('id', data.id);
          alert("MULTIPLE DEVICES DETECTED! Your account has been permanently BANNED.");
          closeModal();
          return;
       }
 
-      // Safe Login
       await supabaseClient.from('premium_users').update({ device_id: currentDevice }).eq('id', data.id);
       localStorage.setItem('premium_email', email);
       alert("Login Successful! You can now watch Streams without Passwords.");
