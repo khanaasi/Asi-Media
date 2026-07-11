@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <style>
-    :root { --bg: #09090b; --header: rgba(18, 18, 22, 0.9); --card-bg: rgba(22, 22, 26, 0.6); --primary: #e50914; --primary-glow: rgba(229, 9, 20, 0.35); --text: #ffffff; --text-muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08); }
+    :root { --bg: #09090b; --header: rgba(18, 18, 22, 0.9); --card-bg: rgba(22, 22, 26, 0.6); --primary: #e50914; --text: #ffffff; --text-muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08); }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
     body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
     ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #0c0c0e; } ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
@@ -18,12 +18,11 @@
     .search-bar { flex: 1; margin: 0 40px; max-width: 500px; position: relative; }
     .search-bar input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid var(--border); border-radius: 30px; background: rgba(30, 30, 35, 0.6); color: white; outline: none; }
     .search-bar i { position: absolute; left: 18px; top: 15px; color: #a1a1aa; }
-    
     .header-right { display: flex; align-items: center; gap: 15px; }
     .nav-btn { background: none; border: 1px solid var(--border); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
     
-    /* THREE DOTS & SIDEBAR MENU CSS */
+    /* SIDEBAR CSS */
     .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); transition: 0.2s; margin-left: 10px; }
     .menu-btn:hover { transform: scale(1.1); }
     .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: right 0.3s ease; z-index: 1000; overflow-y: auto; border-left: 1px solid var(--border); backdrop-filter: blur(20px); }
@@ -84,12 +83,10 @@
     </div>
     <div class="header-right">
       <button class="nav-btn" onclick="openPremiumLoginModal()"><i class="fa-solid fa-gem" style="color:#ffd700;"></i> Premium</button>
-      <!-- THREE DOTS ADDED HERE -->
       <span class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></span>
     </div>
   </div>
 
-  <!-- SIDEBAR ADDED HERE -->
   <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
   <div class="sidebar" id="sidebar">
     <h3>Filters Menu</h3>
@@ -124,16 +121,15 @@
     }
 
     async function loadApp() {
-      // Fetch Settings & Set Telegram Links
-      const { data: setts } = await supabaseClient.from('settings').select('*').single();
+      // Using supabasePublic for safety on index.html
+      const { data: setts } = await supabasePublic.from('settings').select('*').single();
       if(setts) {
         settingsData = setts;
         document.getElementById("tgChannel").href = setts.channel_link || "#";
         document.getElementById("tgGroup").href = setts.group_link || "#";
       }
 
-      // Fetch Posts
-      const { data: posts } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
+      const { data: posts } = await supabasePublic.from('posts').select('*').order('created_at', { ascending: false });
       if(posts) {
         allPosts = posts;
         renderPosts(allPosts);
@@ -143,7 +139,7 @@
     function renderPosts(posts) {
       const grid = document.getElementById("postsGrid");
       if (posts.length === 0) {
-        grid.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:100px 0; color:#777;'>Koi content nahi mila.</div>";
+        grid.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:100px 0; color:#777;'>No content found.</div>";
         return;
       }
       grid.innerHTML = posts.map(p => `
@@ -160,7 +156,7 @@
       renderPosts(allPosts.filter(p => p.name.toLowerCase().includes(term)));
     }
 
-    /* --- SIDEBAR & FILTER LOGIC --- */
+    /* --- SIDEBAR MENU --- */
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("open");
       document.getElementById("overlay").classList.toggle("show");
@@ -189,7 +185,7 @@
         showModal(`
           <span class="close-modal" onclick="closeModal()">&times;</span>
           <h3 style="margin-bottom:15px;">Genres</h3>
-          <div style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto; padding-right:5px;">
+          <div style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto;">
             ${uniqueGenres.map(g => `<button style="margin: 4px 0;" onclick="filterByGenre('${g}')">${g}</button>`).join("")}
           </div>
         `);
@@ -205,32 +201,18 @@
       }
     }
 
-    function filterByCategory(cat) {
-      closeModal();
-      document.getElementById("gridTitle").innerHTML = `Category: <span>${cat}</span>`;
-      renderPosts(allPosts.filter(p => p.category === cat));
-    }
+    function filterByCategory(cat) { closeModal(); document.getElementById("gridTitle").innerHTML = `Category: <span>${cat}</span>`; renderPosts(allPosts.filter(p => p.category === cat)); }
+    function filterByGenre(genre) { closeModal(); document.getElementById("gridTitle").innerHTML = `Genre: <span>${genre}</span>`; renderPosts(allPosts.filter(p => (p.genres || "").toLowerCase().includes(genre.toLowerCase()))); }
+    function filterByLetter(letter) { closeModal(); document.getElementById("gridTitle").innerHTML = `Starting Letter: <span>${letter}</span>`; renderPosts(allPosts.filter(p => p.name.toUpperCase().startsWith(letter))); }
 
-    function filterByGenre(genre) {
-      closeModal();
-      document.getElementById("gridTitle").innerHTML = `Genre: <span>${genre}</span>`;
-      renderPosts(allPosts.filter(p => (p.genres || "").toLowerCase().includes(genre.toLowerCase())));
-    }
-
-    function filterByLetter(letter) {
-      closeModal();
-      document.getElementById("gridTitle").innerHTML = `Starting Letter: <span>${letter}</span>`;
-      renderPosts(allPosts.filter(p => p.name.toUpperCase().startsWith(letter)));
-    }
-
-    /* --- DETAILS & EPISODE LOGIC --- */
+    /* --- DETAILS & EPISODE --- */
     async function showDetail(postId) {
       document.getElementById("postsGrid").style.display = "none";
       document.getElementById("gridTitle").style.display = "none";
       document.getElementById("detailPage").classList.add("active");
 
       const post = allPosts.find(p => p.id === postId);
-      const { data: episodes } = await supabaseClient.from('episodes').select('*').eq('post_id', postId).order('episode_label', {ascending: true});
+      const { data: episodes } = await supabasePublic.from('episodes').select('*').eq('post_id', postId).order('episode_label', {ascending: true});
 
       document.getElementById("detailContent").innerHTML = `
         <div class="detail-header">
@@ -271,7 +253,7 @@
       const localDevice = localStorage.getItem('device_id');
 
       if (userEmail && localDevice) {
-        const { data } = await supabaseClient.from('premium_users').select('*').eq('email', userEmail).single();
+        const { data } = await supabasePublic.from('premium_users').select('*').eq('email', userEmail).single();
         if (data && !data.is_banned && data.device_id === localDevice) {
            window.open(playLink, '_blank'); 
            closeModal();
@@ -293,10 +275,10 @@
       closeModal();
     }
 
-    /* --- PREMIUM LOGIN LOGIC --- */
+    /* --- PREMIUM LOGIC --- */
     function openPremiumLoginModal() {
       if(localStorage.getItem('premium_email')) {
-        alert(`You are already logged in as ${localStorage.getItem('premium_email')}`);
+        alert(`Logged in as ${localStorage.getItem('premium_email')}`);
         return;
       }
       showModal(`
@@ -313,11 +295,11 @@
       const email = document.getElementById("lEmail").value.trim();
       const pass = document.getElementById("lPass").value.trim();
       
-      const { data, error } = await supabaseClient.from('premium_users').select('*').eq('email', email).eq('password', pass).single();
+      const { data, error } = await supabasePublic.from('premium_users').select('*').eq('email', email).eq('password', pass).single();
       
       if (!data) return alert("Wrong Email or Password!");
       if (data.is_banned) return alert("Account has been BANNED for violating multiple device policy.");
-      if (new Date(data.expires_at) < new Date()) return alert("Your Premium validity has expired.");
+      if (new Date(data.expires_at) < new Date()) return alert("Premium validity has expired.");
 
       let currentDevice = localStorage.getItem('device_id');
       if (!currentDevice) {
@@ -326,15 +308,17 @@
       }
 
       if (data.device_id && data.device_id !== currentDevice) {
-         await supabaseClient.from('premium_users').update({ is_banned: true }).eq('id', data.id);
-         alert("MULTIPLE DEVICES DETECTED! Your account has been permanently BANNED.");
+         // Using supabasePublic for this small update, requires basic update rights, 
+         // If fails, we can just log them out, but ban is better.
+         await supabasePublic.from('premium_users').update({ is_banned: true }).eq('id', data.id);
+         alert("MULTIPLE DEVICES DETECTED! Account BANNED.");
          closeModal();
          return;
       }
 
-      await supabaseClient.from('premium_users').update({ device_id: currentDevice }).eq('id', data.id);
+      await supabasePublic.from('premium_users').update({ device_id: currentDevice }).eq('id', data.id);
       localStorage.setItem('premium_email', email);
-      alert("Login Successful! You can now watch Streams without Passwords.");
+      alert("Login Successful! You can watch Streams directly.");
       closeModal();
     }
 
