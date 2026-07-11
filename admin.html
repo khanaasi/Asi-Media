@@ -1,67 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AnimeSubStudio Admin Panel</title>
+  <title>Asi Media - Admin Panel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <style>
+    /* CSS SAME AS YOUR PREVIOUS ADMIN PANEL */
     :root { --bg: #0b0b0c; --panel: #121214; --primary: #e50914; --primary-hover: #b8070e; --text: #ffffff; --border: #222226; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { background: var(--bg); color: var(--text); }
     #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-    .login-box { background: var(--panel); padding: 40px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-    .login-box h2 { color: var(--primary); margin-bottom: 25px; font-weight: 800; letter-spacing: 1px; }
-    .login-box input { width: 100%; padding: 14px; margin-bottom: 20px; background: #1c1c21; border: 1px solid var(--border); color: white; border-radius: 8px; font-size: 16px; text-align: center; transition: 0.3s; }
-    .login-box input:focus { border-color: var(--primary); outline: none; }
-    .login-box button { background: var(--primary); color: white; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .login-box button:hover { background: var(--primary-hover); }
-
-    .header { background: var(--panel); padding: 15px 25px; display: flex; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .login-box { background: var(--panel); padding: 40px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); }
+    .login-box h2 { color: var(--primary); margin-bottom: 25px; }
+    .login-box input { width: 100%; padding: 14px; margin-bottom: 20px; background: #1c1c21; border: 1px solid var(--border); color: white; border-radius: 8px; text-align: center; }
+    .login-box button { background: var(--primary); color: white; width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .header { background: var(--panel); padding: 15px 25px; display: flex; align-items: center; border-bottom: 1px solid var(--border); }
     .menu-toggle { font-size: 24px; cursor: pointer; margin-right: 20px; color: var(--primary); }
-    .site-name { font-size: 20px; font-weight: bold; letter-spacing: 0.5px; }
-
-    .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; background: var(--panel); z-index: 999; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding-top: 80px; border-right: 1px solid var(--border); }
+    .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; background: var(--panel); z-index: 999; transition: 0.3s; padding-top: 80px; border-right: 1px solid var(--border); }
     .sidebar.open { left: 0; }
-    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 998; backdrop-filter: blur(4px); }
-    .sidebar-overlay.show { display: block; }
-    .menu-item { display: flex; align-items: center; padding: 15px 25px; color: var(--text); text-decoration: none; cursor: pointer; font-size: 15px; font-weight: 500; transition: 0.2s; }
-    .menu-item i { margin-right: 15px; width: 20px; text-align: center; color: var(--primary); font-size: 17px; }
+    .menu-item { padding: 15px 25px; color: var(--text); cursor: pointer; display:flex; align-items:center; }
+    .menu-item i { margin-right: 15px; color: var(--primary); }
     .menu-item:hover, .menu-item.active { background: rgba(229, 9, 20, 0.08); color: var(--primary); border-left: 4px solid var(--primary); }
-
     .main-content { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-    .section-card { background: var(--panel); padding: 35px; border-radius: 12px; border: 1px solid var(--border); display: none; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .section-card { background: var(--panel); padding: 35px; border-radius: 12px; border: 1px solid var(--border); display: none; }
     .section-card.active { display: block; }
-    .section-card h3 { border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 25px; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
-
+    .section-card h3 { border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 25px; font-size: 22px; }
     .form-group { margin-bottom: 22px; }
     .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #ccc; }
-    .form-control { width: 100%; padding: 12px 16px; background: #1a1a1f; border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 15px; transition: 0.3s; }
-    .form-control:focus { border-color: var(--primary); outline: none; }
-    textarea.form-control { height: 100px; resize: none; }
-    .btn-submit { background: var(--primary); color: white; padding: 14px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 15px; transition: 0.2s; }
-    .btn-submit:hover { background: var(--primary-hover); }
-
-    .scroll-list { max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: #0f0f11; margin-bottom: 20px; }
+    .form-control { width: 100%; padding: 12px 16px; background: #1a1a1f; border: 1px solid var(--border); border-radius: 8px; color: white; }
+    .btn-submit { background: var(--primary); color: white; padding: 14px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+    .search-container { position: relative; margin-bottom: 20px; }
+    .search-container input { padding-left: 45px; }
+    .search-container i { position: absolute; left: 18px; top: 15px; color: #777; }
+    .scroll-list { max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: #0f0f11; }
     .list-item { padding: 15px 20px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .list-item:hover { background: rgba(255,255,255,0.02); }
-    .delete-btn { background: #7c040a; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
-    .delete-btn:hover { background: var(--primary); }
-    .reset-btn { background: #007bff; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; margin-right: 5px; }
-
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1001; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 500px; padding: 35px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; transition: 0.2s; }
-    .close-modal:hover { color: white; }
+    .delete-btn { background: #7c040a; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1001; justify-content: center; align-items: center; }
+    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; width: 90%; max-width: 500px; padding: 35px; position: relative; }
+    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
   <div id="loginScreen">
     <div class="login-box">
-      <h2>AnimeSubStudio Admin</h2>
+      <h2>Asi Media Admin</h2>
       <input type="password" id="adminPassInput" placeholder="Enter Admin Password">
       <button onclick="attemptLogin()">Log In</button>
     </div>
@@ -69,40 +54,30 @@
 
   <div class="header">
     <span class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></span>
-    <span class="site-name">AnimeSubStudio Admin Portal</span>
+    <span class="site-name">Asi Media Admin Portal</span>
   </div>
-
-  <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
   <div class="sidebar" id="sidebar">
     <div class="menu-item active" onclick="switchSection('addPostSec')"><i class="fa-solid fa-plus"></i> Add Post (01)</div>
     <div class="menu-item" onclick="switchSection('selectPostSec')"><i class="fa-solid fa-magnifying-glass"></i> Select Post (02)</div>
     <div class="menu-item" onclick="switchSection('deletePostSec')"><i class="fa-solid fa-trash-can"></i> Delete Post (03)</div>
-    <div class="menu-item" onclick="switchSection('shortenersSec')"><i class="fa-solid fa-link"></i> Shortener (04)</div>
-    <div class="menu-item" onclick="switchSection('linksSec')"><i class="fa-solid fa-circle-nodes"></i> Site Settings (05)</div>
-    <div class="menu-item" onclick="switchSection('premiumSec')"><i class="fa-solid fa-user-shield"></i> Premium Users (06)</div>
+    <div class="menu-item" onclick="switchSection('shortenersSec')"><i class="fa-solid fa-link"></i> Shorteners (04)</div>
+    <div class="menu-item" onclick="switchSection('linksSec')"><i class="fa-solid fa-gear"></i> Settings (05)</div>
+    <div class="menu-item" onclick="switchSection('premiumSec')"><i class="fa-solid fa-user-shield"></i> Premium (06)</div>
   </div>
 
   <div class="main-content">
-
+    
     <!-- 01. ADD POST -->
     <div id="addPostSec" class="section-card active">
       <h3>Add New Post</h3>
-      
-      <!-- AI Auto-Detect Paste Box (Restored) -->
-      <div class="form-group" style="background: rgba(229, 9, 20, 0.05); padding: 15px; border-radius: 8px; border: 1px dashed var(--primary); margin-bottom: 25px;">
-        <label style="color: #ffd700; font-weight: bold;"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Detect Text Parser (Optional)</label>
-        <textarea id="autoDetectInput" class="form-control" style="height: 110px; font-size: 13px;" placeholder="Telegram description block yahan copy paste karein..."></textarea>
-        <button type="button" class="btn-submit" style="background: #ffd700; color: #000; padding: 8px 15px; font-size: 13px;" onclick="handleAutoDetect()">Auto-Parse Text Block</button>
-      </div>
-
       <form id="addPostForm" onsubmit="submitPost(event)">
-        <div class="form-group"><label>Poster Image URL</label><input type="url" id="postImage" class="form-control" required></div>
+        <div class="form-group"><label>Poster URL (Direct Link)</label><input type="text" id="postImage" class="form-control" placeholder="Image URL"></div>
         <div class="form-group"><label>Post Name</label><input type="text" id="postName" class="form-control" required></div>
         <div class="form-group"><label>Release Date</label><input type="text" id="postRelease" class="form-control"></div>
         <div class="form-group"><label>Genre</label><input type="text" id="postGenre" class="form-control"></div>
         <div class="form-group"><label>Season</label><input type="text" id="postSeason" class="form-control"></div>
-        <div class="form-group"><label>Short Story</label><textarea id="postStory" class="form-control"></textarea></div>
+        <div class="form-group"><label>Short Story</label><input type="text" id="postStory" class="form-control"></div>
         <div class="form-group"><label>Category</label><input type="text" id="postCategory" class="form-control"></div>
         <button type="submit" class="btn-submit">Save Post</button>
       </form>
@@ -110,178 +85,259 @@
 
     <!-- 02. SELECT POST (ADD EPISODE) -->
     <div id="selectPostSec" class="section-card">
-      <h3>Select Post</h3>
+      <h3>Select Post to Add Episode</h3>
+      <div class="search-container"><input type="text" id="searchPostInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForSelection()"></div>
       <div class="scroll-list" id="selectionList"></div>
     </div>
 
     <!-- 03. DELETE POST -->
     <div id="deletePostSec" class="section-card">
       <h3>Delete Post & Episodes</h3>
+      <div class="search-container"><input type="text" id="searchDeleteInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForDeletion()"></div>
       <div class="scroll-list" id="deletionList"></div>
     </div>
 
-    <!-- 04. SHORTENERS SYSTEM -->
+    <!-- 04. SHORTENERS -->
     <div id="shortenersSec" class="section-card">
-      <h3>Shortener Accounts System</h3>
-      <div class="scroll-list" id="shortenerList"></div>
-      <form onsubmit="submitShortener(event)">
-        <div class="form-group"><label>Add Dashboard URL</label><input type="text" id="dashUrl" class="form-control" placeholder="gplinks.in" required></div>
-        <div class="form-group"><label>Add API Key</label><input type="text" id="apiKey" class="form-control" placeholder="API Key" required></div>
-        <button type="submit" class="btn-submit">Add Account</button>
+      <h3>Shortener Accounts</h3>
+      <div class="scroll-list" id="shortenerList" style="margin-bottom: 25px;"></div>
+      <form id="shortenerForm" onsubmit="submitShortener(event)">
+        <div class="form-group"><label>Dashboard URL (eg. https://gplinks.in)</label><input type="url" id="dashUrl" class="form-control" required></div>
+        <div class="form-group"><label>API Key</label><input type="text" id="apiKey" class="form-control" required></div>
+        <button type="submit" class="btn-submit">Add Shortener</button>
       </form>
     </div>
 
-    <!-- 05. SITE SETTINGS -->
+    <!-- 05. SETTINGS -->
     <div id="linksSec" class="section-card">
-      <h3>Site & Player Settings</h3>
-      <form onsubmit="submitSettings(event)">
-        <div class="form-group"><label>Admin Password</label><input type="text" id="adminPass" class="form-control" required></div>
-        <div class="form-group"><label>Video Player Password (Global)</label><input type="text" id="playerPass" class="form-control" required></div>
-        <div class="form-group"><label>Telegram Channel Link</label><input type="url" id="chanLink" class="form-control"></div>
-        <div class="form-group"><label>Telegram Group Link</label><input type="url" id="groupLink" class="form-control"></div>
+      <h3>Site Settings</h3>
+      <form id="settingsForm" onsubmit="submitSettings(event)">
+        <div class="form-group"><label>Admin Password</label><input type="text" id="adminPassNew" class="form-control" required></div>
+        <div class="form-group"><label>Telegram Channel</label><input type="url" id="chanLink" class="form-control"></div>
+        <div class="form-group"><label>Telegram Group</label><input type="url" id="groupLink" class="form-control"></div>
+        <div class="form-group"><label>Global Player Password</label><input type="text" id="playerPass" class="form-control" required></div>
         <button type="submit" class="btn-submit">Save Settings</button>
       </form>
     </div>
 
-    <!-- 06. PREMIUM SYSTEM -->
+    <!-- 06. PREMIUM -->
     <div id="premiumSec" class="section-card">
-      <h3>Premium Users (Anti-Share)</h3>
-      <div class="scroll-list" id="premiumUsersList"></div>
-      <form onsubmit="submitPremium(event)">
-        <div class="form-group"><label>Gmail / Email ID</label><input type="email" id="premUser" class="form-control" required></div>
-        <div class="form-group"><label>Premium Password</label><input type="text" id="premPass" class="form-control" required></div>
-        <button type="submit" class="btn-submit">Generate Premium User</button>
+      <h3>Premium Users</h3>
+      <div class="scroll-list" id="premiumUsersList" style="margin-bottom: 25px;"></div>
+      <form id="premiumForm" onsubmit="submitPremium(event)">
+        <div class="form-group"><label>Email</label><input type="email" id="premEmail" class="form-control" required></div>
+        <div class="form-group"><label>Password</label><input type="text" id="premPass" class="form-control" required></div>
+        <button type="submit" class="btn-submit">Add Premium User (28 Days)</button>
       </form>
     </div>
-
   </div>
 
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    // 🔥 EXACT OLD SUPABASE LINKS (ZIP WALI) 🔥
-    const SUPABASE_URL = "https://kvdfdflygyssnldvahzv.supabase.co"; 
-    const SUPABASE_KEY = "sb_publishable_7MW440PYXtbHbJpAq1v-OQ__1KZvK4R"; 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // FIX: Keep login simple so you don't get locked out
-    if(localStorage.getItem("admin_auth") === "admin123") {
-        document.getElementById("loginScreen").style.display = "none";
-        loadAllData();
-    }
-
     async function attemptLogin() {
       const pass = document.getElementById("adminPassInput").value;
-      if(pass === "admin123") {
-          localStorage.setItem("admin_auth", "admin123");
-          document.getElementById("loginScreen").style.display = "none";
-          loadAllData();
-      } else {
-          alert("Wrong Password! Use 'admin123'");
-      }
+      const { data } = await supabaseClient.from('settings').select('admin_password').single();
+      if(data && data.admin_password === pass) {
+        document.getElementById("loginScreen").style.display = "none";
+        loadInitialData();
+      } else { alert("Incorrect Password"); }
     }
 
-    function generateUUID() { return crypto.randomUUID(); }
-    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
-    function switchSection(secId) { document.querySelectorAll(".section-card, .menu-item").forEach(el => el.classList.remove("active")); document.getElementById(secId).classList.add("active"); toggleSidebar(); }
-
-    function handleAutoDetect() {
-      const text = document.getElementById("autoDetectInput").value;
-      if (!text.trim()) return;
-      const lines = text.split('\n');
-      lines.forEach(line => {
-        const match = line.trim().match(/^(name|title|category|cat|season|story|shortstory|description|desc|genre|genres|release\s*date|release|date)\s*[-=_:\s]+(.*)/i);
-        if (match) {
-          const key = match[1].toLowerCase().trim(), val = match[2].trim();
-          if(key.includes("name") || key.includes("title")) document.getElementById("postName").value = val;
-          if(key.includes("cat")) document.getElementById("postCategory").value = val;
-          if(key.includes("season")) document.getElementById("postSeason").value = val;
-          if(key.includes("story") || key.includes("desc")) document.getElementById("postStory").value = val;
-          if(key.includes("genre")) document.getElementById("postGenre").value = val;
-          if(key.includes("date") || key.includes("release")) document.getElementById("postRelease").value = val;
-        }
-      });
+    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); }
+    function switchSection(secId) {
+      document.querySelectorAll(".section-card").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".menu-item").forEach(el => el.classList.remove("active"));
+      document.getElementById(secId).classList.add("active");
+      toggleSidebar();
     }
 
-    async function loadAllData() { fetchPosts(); fetchShorteners(); fetchSettings(); fetchPremiumUsers(); }
+    function loadInitialData() {
+      fetchPostsForSelection();
+      fetchPostsForDeletion();
+      fetchShorteners();
+      fetchSettings();
+      fetchPremiumUsers();
+    }
 
+    // Add Post
     async function submitPost(e) {
       e.preventDefault();
-      try {
-          await supabase.from('posts').insert([{ id: generateUUID(), image_url: document.getElementById("postImage").value, name: document.getElementById("postName").value, category: document.getElementById("postCategory").value, release_date: document.getElementById("postRelease").value, genres: document.getElementById("postGenre").value, season: document.getElementById("postSeason").value, short_story: document.getElementById("postStory").value }]);
-          alert("Post Saved!"); e.target.reset(); fetchPosts();
-      } catch(err) { console.error(err); alert("Error saving post."); }
+      const body = {
+        image_url: document.getElementById("postImage").value || "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=600",
+        name: document.getElementById("postName").value.trim(),
+        release_date: document.getElementById("postRelease").value.trim(),
+        genres: document.getElementById("postGenre").value.trim(),
+        season: document.getElementById("postSeason").value.trim(),
+        short_story: document.getElementById("postStory").value.trim(),
+        category: document.getElementById("postCategory").value.trim()
+      };
+      const { error } = await supabaseClient.from('posts').insert([body]);
+      if (error) alert(error.message);
+      else { alert("Post Saved!"); document.getElementById("addPostForm").reset(); loadInitialData(); }
     }
 
-    async function fetchPosts() {
-      try {
-          const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
-          let selHtml = "", delHtml = "";
-          if(data) {
-            data.forEach(p => {
-              selHtml += `<div class="list-item" onclick="openEpModal('${p.id}', '${p.name.replace(/'/g, "\\'")}')"><span>${p.name}</span><i class="fa-solid fa-plus"></i></div>`;
-              delHtml += `<div class="list-item"><span>${p.name}</span><button class="delete-btn" onclick="deletePost('${p.id}')">Delete</button></div>`;
-            });
-          }
-          document.getElementById("selectionList").innerHTML = selHtml; document.getElementById("deletionList").innerHTML = delHtml;
-      } catch(e) {}
+    // Select Post for Episodes
+    async function fetchPostsForSelection() {
+      const val = document.getElementById("searchPostInput").value;
+      const { data } = await supabaseClient.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
+      document.getElementById("selectionList").innerHTML = data.map(post => `
+        <div class="list-item" onclick="openEpisodeModal('${post.id}', '${post.name.replace(/'/g, "\\'")}')">
+          <span>${post.name}</span> <i class="fa-solid fa-plus"></i>
+        </div>
+      `).join("");
     }
 
-    function openEpModal(postId, postName) {
+    function openEpisodeModal(postId, postName) {
       document.getElementById("modalContent").innerHTML = `
-        <span class="close-modal" onclick="document.getElementById('modal').style.display='none'">&times;</span>
-        <h3>Add Episode: ${postName}</h3>
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 style="margin-bottom: 20px;">Add Episode - ${postName}</h3>
         <form onsubmit="submitEpisode(event, '${postId}')">
-          <div class="form-group"><input type="text" id="epLabel" class="form-control" placeholder="Episode No. (e.g. 01)" required></div>
-          <div class="form-group"><input type="url" id="epOrig" class="form-control" placeholder="Download Link (For Shortener)" required></div>
-          <div class="form-group"><input type="url" id="epPlay" class="form-control" placeholder="Play Embed Link (Optional)"></div>
-          <button type="submit" class="btn-submit">Add Episode</button>
-        </form>`;
+          <div class="form-group"><label>Episode Number</label><input type="text" id="epLabel" class="form-control" required></div>
+          <div class="form-group"><label>Original Download Link</label><input type="url" id="epLink" class="form-control" required></div>
+          <div class="form-group"><label>Stream/Play Link</label><input type="url" id="epPlayLink" class="form-control" required></div>
+          <button type="submit" id="epSubmitBtn" class="btn-submit">Save Episode & Generate Link</button>
+        </form>
+      `;
       document.getElementById("modal").style.display = "flex";
+    }
+
+    // Shortener Logic - Bypass Proof & View Counting
+    async function generateShortLink(originalUrl) {
+      const { data: shorteners } = await supabaseClient.from('shorteners').select('*');
+      if (!shorteners || shorteners.length === 0) return originalUrl; // Fallback agar admin ne account nahi add kiya
+      
+      const sh = shorteners[Math.floor(Math.random() * shorteners.length)]; // Random shortener
+      try {
+        const apiUrl = `${sh.dashboard_url}/api?api=${sh.api_key}&url=${encodeURIComponent(originalUrl)}`;
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        if (data.status === 'success' || data.shortenedUrl) {
+          return data.shortenedUrl; // Generated Short Link
+        }
+      } catch(e) { console.error("Shortener API failed", e); }
+      return originalUrl;
     }
 
     async function submitEpisode(e, postId) {
       e.preventDefault();
-      await supabase.from('episodes').insert([{ id: generateUUID(), post_id: postId, episode_label: document.getElementById("epLabel").value, original_link: document.getElementById("epOrig").value, play_link: document.getElementById("epPlay").value }]);
-      alert("Episode Added!"); document.getElementById('modal').style.display='none';
+      const btn = document.getElementById("epSubmitBtn");
+      btn.innerText = "Generating Shortlink & Saving...";
+      btn.disabled = true;
+
+      const epLabel = document.getElementById("epLabel").value.trim();
+      const original_link = document.getElementById("epLink").value.trim();
+      const play_link = document.getElementById("epPlayLink").value.trim();
+
+      // System dynamically generates the shortlink RIGHT NOW and saves it. 
+      const final_short_link = await generateShortLink(original_link);
+
+      const { error } = await supabaseClient.from('episodes').insert([{
+        post_id: postId, episode_label: "EPISODE " + epLabel, original_link, play_link, short_link: final_short_link
+      }]);
+
+      if (error) alert("Error saving: " + error.message);
+      else { alert("Episode Saved! Shortlink generated successfully."); closeModal(); }
+      
+      btn.innerText = "Save Episode & Generate Link";
+      btn.disabled = false;
+    }
+
+    // Delete Post System
+    async function fetchPostsForDeletion() {
+      const val = document.getElementById("searchDeleteInput").value;
+      const { data } = await supabaseClient.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
+      document.getElementById("deletionList").innerHTML = data.map(post => `
+        <div class="list-item">
+          <span>${post.name}</span>
+          <button class="delete-btn" onclick="deletePost('${post.id}')">Delete</button>
+        </div>
+      `).join("");
     }
 
     async function deletePost(id) {
-      if(confirm("Delete this Post and all its episodes?")) {
-        await supabase.from('episodes').delete().eq('post_id', id); await supabase.from('posts').delete().eq('id', id); fetchPosts();
+      if(confirm("Delete this post permanently?")) {
+        await supabaseClient.from('posts').delete().eq('id', id);
+        fetchPostsForDeletion(); fetchPostsForSelection();
       }
     }
 
+    // Shorteners
     async function fetchShorteners() {
-      try {
-          const { data } = await supabase.from('shorteners').select('*');
-          document.getElementById("shortenerList").innerHTML = data ? data.map(s => `<div class="list-item"><span>${s.dashboard_url}</span><button class="delete-btn" onclick="delShort('${s.id}')">Del</button></div>`).join("") : "";
-      } catch(e) {}
+      const { data } = await supabaseClient.from('shorteners').select('*');
+      document.getElementById("shortenerList").innerHTML = data.map(sh => `
+        <div class="list-item">
+          <div>${sh.dashboard_url}</div>
+          <button class="delete-btn" onclick="deleteShortener('${sh.id}')">Delete</button>
+        </div>
+      `).join("");
     }
-    async function submitShortener(e) { e.preventDefault(); await supabase.from('shorteners').insert([{ id: generateUUID(), dashboard_url: document.getElementById("dashUrl").value, api_key: document.getElementById("apiKey").value }]); fetchShorteners(); e.target.reset(); }
-    async function delShort(id) { await supabase.from('shorteners').delete().eq('id', id); fetchShorteners(); }
-
-    async function fetchPremiumUsers() {
-      try {
-          const { data } = await supabase.from('premium_users').select('*');
-          document.getElementById("premiumUsersList").innerHTML = data ? data.map(u => `<div class="list-item"><span style="${u.device_id ? 'color:#00ff88' : ''}">${u.username} ${u.device_id ? '(Locked)' : '(New)'}</span><div><button class="reset-btn" onclick="resetDevice('${u.id}')">Reset Lock</button><button class="delete-btn" onclick="delPrem('${u.id}')">Del</button></div></div>`).join("") : "";
-      } catch(e) {}
+    
+    async function submitShortener(e) {
+      e.preventDefault();
+      await supabaseClient.from('shorteners').insert([{
+        dashboard_url: document.getElementById("dashUrl").value.trim(),
+        api_key: document.getElementById("apiKey").value.trim()
+      }]);
+      document.getElementById("shortenerForm").reset();
+      fetchShorteners();
     }
-    async function submitPremium(e) { e.preventDefault(); await supabase.from('premium_users').insert([{ id: generateUUID(), username: document.getElementById("premUser").value, password: document.getElementById("premPass").value }]); fetchPremiumUsers(); e.target.reset(); }
-    async function delPrem(id) { await supabase.from('premium_users').delete().eq('id', id); fetchPremiumUsers(); }
-    async function resetDevice(id) { await supabase.from('premium_users').update({ device_id: null }).eq('id', id); fetchPremiumUsers(); }
+    
+    async function deleteShortener(id) { await supabaseClient.from('shorteners').delete().eq('id', id); fetchShorteners(); }
 
+    // Settings
     async function fetchSettings() {
-      try {
-          const { data } = await supabase.from('site_settings').select('*').eq('id', 1).single();
-          if(data) { document.getElementById("adminPass").value = data.admin_password || ""; document.getElementById("playerPass").value = data.player_password || ""; document.getElementById("chanLink").value = data.channel_link || ""; document.getElementById("groupLink").value = data.group_link || ""; }
-      } catch(e) {}
+      const { data } = await supabaseClient.from('settings').select('*').single();
+      if(data) {
+        document.getElementById("adminPassNew").value = data.admin_password;
+        document.getElementById("chanLink").value = data.channel_link || '';
+        document.getElementById("groupLink").value = data.group_link || '';
+        document.getElementById("playerPass").value = data.player_password || '';
+      }
     }
+    
     async function submitSettings(e) {
       e.preventDefault();
-      await supabase.from('site_settings').upsert({ id: 1, admin_password: document.getElementById("adminPass").value, player_password: document.getElementById("playerPass").value, channel_link: document.getElementById("chanLink").value, group_link: document.getElementById("groupLink").value });
+      await supabaseClient.from('settings').update({
+        admin_password: document.getElementById("adminPassNew").value,
+        channel_link: document.getElementById("chanLink").value,
+        group_link: document.getElementById("groupLink").value,
+        player_password: document.getElementById("playerPass").value
+      }).neq('id', 0); // Updates first row
       alert("Settings Updated!");
     }
+
+    // Premium Users
+    async function fetchPremiumUsers() {
+      const { data } = await supabaseClient.from('premium_users').select('*');
+      document.getElementById("premiumUsersList").innerHTML = data.map(u => `
+        <div class="list-item">
+          <div>
+            <strong>${u.email}</strong> 
+            ${u.is_banned ? '<span style="color:red; font-size:12px;">(BANNED)</span>' : ''}
+            <br><small>Pass: ${u.password} | Expiry: ${new Date(u.expires_at).toLocaleDateString()}</small>
+          </div>
+          <button class="delete-btn" onclick="deletePremium('${u.id}')">Delete</button>
+        </div>
+      `).join("");
+    }
+
+    async function submitPremium(e) {
+      e.preventDefault();
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 28);
+      await supabaseClient.from('premium_users').insert([{
+        email: document.getElementById("premEmail").value.trim(),
+        password: document.getElementById("premPass").value.trim(),
+        expires_at: expires.toISOString()
+      }]);
+      document.getElementById("premiumForm").reset();
+      fetchPremiumUsers();
+    }
+    
+    async function deletePremium(id) { await supabaseClient.from('premium_users').delete().eq('id', id); fetchPremiumUsers(); }
+
+    function closeModal() { document.getElementById("modal").style.display = "none"; }
   </script>
 </body>
 </html>
