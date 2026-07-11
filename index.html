@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Asi Media - Watch Free Anime Sub/Dub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Supabase Core Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
+  
   <style>
     :root { --bg: #09090b; --header: rgba(18, 18, 22, 0.9); --card-bg: rgba(22, 22, 26, 0.6); --primary: #e50914; --text: #ffffff; --text-muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08); }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
@@ -22,7 +24,6 @@
     .nav-btn { background: none; border: 1px solid var(--border); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
     
-    /* SIDEBAR CSS */
     .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); transition: 0.2s; margin-left: 10px; }
     .menu-btn:hover { transform: scale(1.1); }
     .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: right 0.3s ease; z-index: 1000; overflow-y: auto; border-left: 1px solid var(--border); backdrop-filter: blur(20px); }
@@ -111,6 +112,17 @@
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
+    // ==========================================
+    // DEEP ANNELISE FIX: PUBLIC CONFIGURATION
+    // Replace YOUR_NEW_URL_HERE with your new Supabase Project URL
+    // Replace sb_publishable_... with your new Publishable key
+    // ==========================================
+    const SUPABASE_URL = "https://YOUR_NEW_URL_HERE.supabase.co"; 
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_CrFqmZHxB__p9akDmKoaIQ_T0Lm9VnX"; 
+    
+    // Using Public Key for safety on user end
+    const supabasePublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
     let allPosts = [];
     let settingsData = {};
 
@@ -121,7 +133,6 @@
     }
 
     async function loadApp() {
-      // Using supabasePublic for safety on index.html
       const { data: setts } = await supabasePublic.from('settings').select('*').single();
       if(setts) {
         settingsData = setts;
@@ -156,7 +167,6 @@
       renderPosts(allPosts.filter(p => p.name.toLowerCase().includes(term)));
     }
 
-    /* --- SIDEBAR MENU --- */
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("open");
       document.getElementById("overlay").classList.toggle("show");
@@ -205,7 +215,6 @@
     function filterByGenre(genre) { closeModal(); document.getElementById("gridTitle").innerHTML = `Genre: <span>${genre}</span>`; renderPosts(allPosts.filter(p => (p.genres || "").toLowerCase().includes(genre.toLowerCase()))); }
     function filterByLetter(letter) { closeModal(); document.getElementById("gridTitle").innerHTML = `Starting Letter: <span>${letter}</span>`; renderPosts(allPosts.filter(p => p.name.toUpperCase().startsWith(letter))); }
 
-    /* --- DETAILS & EPISODE --- */
     async function showDetail(postId) {
       document.getElementById("postsGrid").style.display = "none";
       document.getElementById("gridTitle").style.display = "none";
@@ -275,7 +284,6 @@
       closeModal();
     }
 
-    /* --- PREMIUM LOGIC --- */
     function openPremiumLoginModal() {
       if(localStorage.getItem('premium_email')) {
         alert(`Logged in as ${localStorage.getItem('premium_email')}`);
@@ -308,8 +316,6 @@
       }
 
       if (data.device_id && data.device_id !== currentDevice) {
-         // Using supabasePublic for this small update, requires basic update rights, 
-         // If fails, we can just log them out, but ban is better.
          await supabasePublic.from('premium_users').update({ is_banned: true }).eq('id', data.id);
          alert("MULTIPLE DEVICES DETECTED! Account BANNED.");
          closeModal();
