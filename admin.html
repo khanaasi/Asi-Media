@@ -2,41 +2,50 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Asi Media - Admin Panel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- supabase-config.js import -->
   <script src="supabase-config.js"></script>
   <style>
-    /* CSS SAME AS YOUR PREVIOUS ADMIN PANEL */
-    :root { --bg: #0b0b0c; --panel: #121214; --primary: #e50914; --primary-hover: #b8070e; --text: #ffffff; --border: #222226; }
+    :root { --bg: #0b0b0c; --panel: #121214; --primary: #e50914; --text: #ffffff; --border: #222226; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    body { background: var(--bg); color: var(--text); }
+    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+    
     #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-    .login-box { background: var(--panel); padding: 40px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); }
-    .login-box h2 { color: var(--primary); margin-bottom: 25px; }
-    .login-box input { width: 100%; padding: 14px; margin-bottom: 20px; background: #1c1c21; border: 1px solid var(--border); color: white; border-radius: 8px; text-align: center; }
-    .login-box button { background: var(--primary); color: white; width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .login-box { background: var(--panel); padding: 40px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .login-box h2 { color: var(--primary); margin-bottom: 10px; }
+    .login-box p { color: #a1a1aa; font-size: 13px; margin-bottom: 25px; }
+    .login-box input { width: 100%; padding: 14px; margin-bottom: 20px; background: #1c1c21; border: 1px solid var(--border); color: white; border-radius: 8px; text-align: center; font-size: 14px; }
+    .login-box button { background: var(--primary); color: white; width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; }
+    
     .header { background: var(--panel); padding: 15px 25px; display: flex; align-items: center; border-bottom: 1px solid var(--border); }
     .menu-toggle { font-size: 24px; cursor: pointer; margin-right: 20px; color: var(--primary); }
     .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; background: var(--panel); z-index: 999; transition: 0.3s; padding-top: 80px; border-right: 1px solid var(--border); }
     .sidebar.open { left: 0; }
-    .menu-item { padding: 15px 25px; color: var(--text); cursor: pointer; display:flex; align-items:center; }
-    .menu-item i { margin-right: 15px; color: var(--primary); }
+    .menu-item { padding: 15px 25px; color: var(--text); cursor: pointer; display:flex; align-items:center; font-weight: 500; }
+    .menu-item i { margin-right: 15px; color: var(--primary); width: 20px; text-align: center; }
     .menu-item:hover, .menu-item.active { background: rgba(229, 9, 20, 0.08); color: var(--primary); border-left: 4px solid var(--primary); }
+    
     .main-content { max-width: 800px; margin: 40px auto; padding: 0 20px; }
     .section-card { background: var(--panel); padding: 35px; border-radius: 12px; border: 1px solid var(--border); display: none; }
     .section-card.active { display: block; }
     .section-card h3 { border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 25px; font-size: 22px; }
+    
     .form-group { margin-bottom: 22px; }
     .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #ccc; }
     .form-control { width: 100%; padding: 12px 16px; background: #1a1a1f; border: 1px solid var(--border); border-radius: 8px; color: white; }
     .btn-submit { background: var(--primary); color: white; padding: 14px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+    
     .search-container { position: relative; margin-bottom: 20px; }
     .search-container input { padding-left: 45px; }
     .search-container i { position: absolute; left: 18px; top: 15px; color: #777; }
+    
     .scroll-list { max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: #0f0f11; }
     .list-item { padding: 15px 20px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .delete-btn { background: #7c040a; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1001; justify-content: center; align-items: center; }
     .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; width: 90%; max-width: 500px; padding: 35px; position: relative; }
     .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; }
@@ -44,11 +53,13 @@
 </head>
 <body>
 
+  <!-- SECURE LOGIN SCREEN -->
   <div id="loginScreen">
     <div class="login-box">
       <h2>Asi Media Admin</h2>
-      <input type="password" id="adminPassInput" placeholder="Enter Admin Password">
-      <button onclick="attemptLogin()">Log In</button>
+      <p>Paste your Supabase <b>Secret Key</b> to login securely. (Safe & Encrypted)</p>
+      <input type="password" id="adminPassInput" placeholder="sb_secret_XXXXXXXXX...">
+      <button onclick="attemptLogin()">Log In Securely</button>
     </div>
   </div>
 
@@ -59,11 +70,11 @@
 
   <div class="sidebar" id="sidebar">
     <div class="menu-item active" onclick="switchSection('addPostSec')"><i class="fa-solid fa-plus"></i> Add Post (01)</div>
-    <div class="menu-item" onclick="switchSection('selectPostSec')"><i class="fa-solid fa-magnifying-glass"></i> Select Post (02)</div>
+    <div class="menu-item" onclick="switchSection('selectPostSec')"><i class="fa-solid fa-magnifying-glass"></i> Add Episode (02)</div>
     <div class="menu-item" onclick="switchSection('deletePostSec')"><i class="fa-solid fa-trash-can"></i> Delete Post (03)</div>
     <div class="menu-item" onclick="switchSection('shortenersSec')"><i class="fa-solid fa-link"></i> Shorteners (04)</div>
     <div class="menu-item" onclick="switchSection('linksSec')"><i class="fa-solid fa-gear"></i> Settings (05)</div>
-    <div class="menu-item" onclick="switchSection('premiumSec')"><i class="fa-solid fa-user-shield"></i> Premium (06)</div>
+    <div class="menu-item" onclick="switchSection('premiumSec')"><i class="fa-solid fa-user-shield"></i> Premium Users (06)</div>
   </div>
 
   <div class="main-content">
@@ -72,7 +83,7 @@
     <div id="addPostSec" class="section-card active">
       <h3>Add New Post</h3>
       <form id="addPostForm" onsubmit="submitPost(event)">
-        <div class="form-group"><label>Poster URL (Direct Link)</label><input type="text" id="postImage" class="form-control" placeholder="Image URL"></div>
+        <div class="form-group"><label>Poster Image URL</label><input type="url" id="postImage" class="form-control" required></div>
         <div class="form-group"><label>Post Name</label><input type="text" id="postName" class="form-control" required></div>
         <div class="form-group"><label>Release Date</label><input type="text" id="postRelease" class="form-control"></div>
         <div class="form-group"><label>Genre</label><input type="text" id="postGenre" class="form-control"></div>
@@ -83,17 +94,17 @@
       </form>
     </div>
 
-    <!-- 02. SELECT POST (ADD EPISODE) -->
+    <!-- 02. ADD EPISODE -->
     <div id="selectPostSec" class="section-card">
       <h3>Select Post to Add Episode</h3>
-      <div class="search-container"><input type="text" id="searchPostInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForSelection()"></div>
+      <div class="search-container"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchPostInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForSelection()"></div>
       <div class="scroll-list" id="selectionList"></div>
     </div>
 
     <!-- 03. DELETE POST -->
     <div id="deletePostSec" class="section-card">
-      <h3>Delete Post & Episodes</h3>
-      <div class="search-container"><input type="text" id="searchDeleteInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForDeletion()"></div>
+      <h3>Delete Post</h3>
+      <div class="search-container"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchDeleteInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForDeletion()"></div>
       <div class="scroll-list" id="deletionList"></div>
     </div>
 
@@ -112,37 +123,60 @@
     <div id="linksSec" class="section-card">
       <h3>Site Settings</h3>
       <form id="settingsForm" onsubmit="submitSettings(event)">
-        <div class="form-group"><label>Admin Password</label><input type="text" id="adminPassNew" class="form-control" required></div>
-        <div class="form-group"><label>Telegram Channel</label><input type="url" id="chanLink" class="form-control"></div>
-        <div class="form-group"><label>Telegram Group</label><input type="url" id="groupLink" class="form-control"></div>
+        <!-- Legacy Password field kept for database integrity -->
+        <div class="form-group"><label>App Password (Legacy)</label><input type="text" id="adminPassNew" class="form-control" required></div>
+        <div class="form-group"><label>Telegram Channel Link</label><input type="url" id="chanLink" class="form-control"></div>
+        <div class="form-group"><label>Telegram Group Link</label><input type="url" id="groupLink" class="form-control"></div>
         <div class="form-group"><label>Global Player Password</label><input type="text" id="playerPass" class="form-control" required></div>
         <button type="submit" class="btn-submit">Save Settings</button>
       </form>
     </div>
 
-    <!-- 06. PREMIUM -->
+    <!-- 06. PREMIUM USERS -->
     <div id="premiumSec" class="section-card">
-      <h3>Premium Users</h3>
+      <h3>Premium Users (28 Days)</h3>
       <div class="scroll-list" id="premiumUsersList" style="margin-bottom: 25px;"></div>
       <form id="premiumForm" onsubmit="submitPremium(event)">
-        <div class="form-group"><label>Email</label><input type="email" id="premEmail" class="form-control" required></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="premEmail" class="form-control" required></div>
         <div class="form-group"><label>Password</label><input type="text" id="premPass" class="form-control" required></div>
-        <button type="submit" class="btn-submit">Add Premium User (28 Days)</button>
+        <button type="submit" class="btn-submit">Add Premium User</button>
       </form>
     </div>
+
   </div>
 
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    async function attemptLogin() {
-      const pass = document.getElementById("adminPassInput").value;
-      const { data } = await supabaseClient.from('settings').select('admin_password').single();
-      if(data && data.admin_password === pass) {
+    // Dinamically create admin client based on Secret Key
+    let supabaseAdmin = null;
+
+    async function attemptLogin(savedKey = null) {
+      const secretKey = savedKey || document.getElementById("adminPassInput").value.trim();
+      if (!secretKey) return alert("Please enter Secret Key");
+
+      // SUPABASE_URL comes from supabase-config.js
+      const tempClient = window.supabase.createClient(SUPABASE_URL, secretKey);
+
+      // Verifying if the key works
+      const { data, error } = await tempClient.from('settings').select('*').limit(1);
+
+      if (!error && data) {
+        supabaseAdmin = tempClient;
+        localStorage.setItem("admin_secret_key", secretKey); // Saving in browser
         document.getElementById("loginScreen").style.display = "none";
         loadInitialData();
-      } else { alert("Incorrect Password"); }
+      } else {
+        if (!savedKey) alert("Invalid Secret Key! Access Denied.");
+        localStorage.removeItem("admin_secret_key");
+      }
     }
+
+    // Auto-login if key is saved in LocalStorage
+    window.onload = () => {
+      const saved = localStorage.getItem("admin_secret_key");
+      if(saved) attemptLogin(saved);
+    };
 
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); }
     function switchSection(secId) {
@@ -160,11 +194,10 @@
       fetchPremiumUsers();
     }
 
-    // Add Post
     async function submitPost(e) {
       e.preventDefault();
       const body = {
-        image_url: document.getElementById("postImage").value || "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=600",
+        image_url: document.getElementById("postImage").value,
         name: document.getElementById("postName").value.trim(),
         release_date: document.getElementById("postRelease").value.trim(),
         genres: document.getElementById("postGenre").value.trim(),
@@ -172,15 +205,14 @@
         short_story: document.getElementById("postStory").value.trim(),
         category: document.getElementById("postCategory").value.trim()
       };
-      const { error } = await supabaseClient.from('posts').insert([body]);
-      if (error) alert(error.message);
+      const { error } = await supabaseAdmin.from('posts').insert([body]);
+      if (error) alert("Error: " + error.message);
       else { alert("Post Saved!"); document.getElementById("addPostForm").reset(); loadInitialData(); }
     }
 
-    // Select Post for Episodes
     async function fetchPostsForSelection() {
       const val = document.getElementById("searchPostInput").value;
-      const { data } = await supabaseClient.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
+      const { data } = await supabaseAdmin.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
       document.getElementById("selectionList").innerHTML = data.map(post => `
         <div class="list-item" onclick="openEpisodeModal('${post.id}', '${post.name.replace(/'/g, "\\'")}')">
           <span>${post.name}</span> <i class="fa-solid fa-plus"></i>
@@ -191,7 +223,8 @@
     function openEpisodeModal(postId, postName) {
       document.getElementById("modalContent").innerHTML = `
         <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h3 style="margin-bottom: 20px;">Add Episode - ${postName}</h3>
+        <h3 style="margin-bottom: 20px; color: #e50914;">Add Episode</h3>
+        <p style="margin-bottom: 20px;">${postName}</p>
         <form onsubmit="submitEpisode(event, '${postId}')">
           <div class="form-group"><label>Episode Number</label><input type="text" id="epLabel" class="form-control" required></div>
           <div class="form-group"><label>Original Download Link</label><input type="url" id="epLink" class="form-control" required></div>
@@ -202,18 +235,18 @@
       document.getElementById("modal").style.display = "flex";
     }
 
-    // Shortener Logic - Bypass Proof & View Counting
+    // Shortener Logic - Background Generation
     async function generateShortLink(originalUrl) {
-      const { data: shorteners } = await supabaseClient.from('shorteners').select('*');
-      if (!shorteners || shorteners.length === 0) return originalUrl; // Fallback agar admin ne account nahi add kiya
+      const { data: shorteners } = await supabaseAdmin.from('shorteners').select('*');
+      if (!shorteners || shorteners.length === 0) return originalUrl; 
       
-      const sh = shorteners[Math.floor(Math.random() * shorteners.length)]; // Random shortener
+      const sh = shorteners[0]; // Picking the first shortener account
       try {
         const apiUrl = `${sh.dashboard_url}/api?api=${sh.api_key}&url=${encodeURIComponent(originalUrl)}`;
         const res = await fetch(apiUrl);
         const data = await res.json();
         if (data.status === 'success' || data.shortenedUrl) {
-          return data.shortenedUrl; // Generated Short Link
+          return data.shortenedUrl; 
         }
       } catch(e) { console.error("Shortener API failed", e); }
       return originalUrl;
@@ -222,31 +255,29 @@
     async function submitEpisode(e, postId) {
       e.preventDefault();
       const btn = document.getElementById("epSubmitBtn");
-      btn.innerText = "Generating Shortlink & Saving...";
+      btn.innerText = "Generating Link...";
       btn.disabled = true;
 
       const epLabel = document.getElementById("epLabel").value.trim();
       const original_link = document.getElementById("epLink").value.trim();
       const play_link = document.getElementById("epPlayLink").value.trim();
 
-      // System dynamically generates the shortlink RIGHT NOW and saves it. 
       const final_short_link = await generateShortLink(original_link);
 
-      const { error } = await supabaseClient.from('episodes').insert([{
+      const { error } = await supabaseAdmin.from('episodes').insert([{
         post_id: postId, episode_label: "EPISODE " + epLabel, original_link, play_link, short_link: final_short_link
       }]);
 
       if (error) alert("Error saving: " + error.message);
-      else { alert("Episode Saved! Shortlink generated successfully."); closeModal(); }
+      else { alert("Episode Saved successfully!"); closeModal(); }
       
       btn.innerText = "Save Episode & Generate Link";
       btn.disabled = false;
     }
 
-    // Delete Post System
     async function fetchPostsForDeletion() {
       const val = document.getElementById("searchDeleteInput").value;
-      const { data } = await supabaseClient.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
+      const { data } = await supabaseAdmin.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
       document.getElementById("deletionList").innerHTML = data.map(post => `
         <div class="list-item">
           <span>${post.name}</span>
@@ -257,14 +288,13 @@
 
     async function deletePost(id) {
       if(confirm("Delete this post permanently?")) {
-        await supabaseClient.from('posts').delete().eq('id', id);
+        await supabaseAdmin.from('posts').delete().eq('id', id);
         fetchPostsForDeletion(); fetchPostsForSelection();
       }
     }
 
-    // Shorteners
     async function fetchShorteners() {
-      const { data } = await supabaseClient.from('shorteners').select('*');
+      const { data } = await supabaseAdmin.from('shorteners').select('*');
       document.getElementById("shortenerList").innerHTML = data.map(sh => `
         <div class="list-item">
           <div>${sh.dashboard_url}</div>
@@ -275,7 +305,7 @@
     
     async function submitShortener(e) {
       e.preventDefault();
-      await supabaseClient.from('shorteners').insert([{
+      await supabaseAdmin.from('shorteners').insert([{
         dashboard_url: document.getElementById("dashUrl").value.trim(),
         api_key: document.getElementById("apiKey").value.trim()
       }]);
@@ -283,13 +313,12 @@
       fetchShorteners();
     }
     
-    async function deleteShortener(id) { await supabaseClient.from('shorteners').delete().eq('id', id); fetchShorteners(); }
+    async function deleteShortener(id) { await supabaseAdmin.from('shorteners').delete().eq('id', id); fetchShorteners(); }
 
-    // Settings
     async function fetchSettings() {
-      const { data } = await supabaseClient.from('settings').select('*').single();
+      const { data } = await supabaseAdmin.from('settings').select('*').single();
       if(data) {
-        document.getElementById("adminPassNew").value = data.admin_password;
+        document.getElementById("adminPassNew").value = data.admin_password || '';
         document.getElementById("chanLink").value = data.channel_link || '';
         document.getElementById("groupLink").value = data.group_link || '';
         document.getElementById("playerPass").value = data.player_password || '';
@@ -298,24 +327,23 @@
     
     async function submitSettings(e) {
       e.preventDefault();
-      await supabaseClient.from('settings').update({
+      await supabaseAdmin.from('settings').update({
         admin_password: document.getElementById("adminPassNew").value,
         channel_link: document.getElementById("chanLink").value,
         group_link: document.getElementById("groupLink").value,
         player_password: document.getElementById("playerPass").value
-      }).neq('id', 0); // Updates first row
+      }).neq('id', 0); 
       alert("Settings Updated!");
     }
 
-    // Premium Users
     async function fetchPremiumUsers() {
-      const { data } = await supabaseClient.from('premium_users').select('*');
+      const { data } = await supabaseAdmin.from('premium_users').select('*');
       document.getElementById("premiumUsersList").innerHTML = data.map(u => `
         <div class="list-item">
           <div>
             <strong>${u.email}</strong> 
-            ${u.is_banned ? '<span style="color:red; font-size:12px;">(BANNED)</span>' : ''}
-            <br><small>Pass: ${u.password} | Expiry: ${new Date(u.expires_at).toLocaleDateString()}</small>
+            ${u.is_banned ? '<span style="color:red; font-size:12px; font-weight:bold;">(BANNED)</span>' : ''}
+            <br><small style="color:#aaa;">Pass: ${u.password} | Expiry: ${new Date(u.expires_at).toLocaleDateString()}</small>
           </div>
           <button class="delete-btn" onclick="deletePremium('${u.id}')">Delete</button>
         </div>
@@ -325,8 +353,8 @@
     async function submitPremium(e) {
       e.preventDefault();
       const expires = new Date();
-      expires.setDate(expires.getDate() + 28);
-      await supabaseClient.from('premium_users').insert([{
+      expires.setDate(expires.getDate() + 28); // 28 Days Premium Expiry
+      await supabaseAdmin.from('premium_users').insert([{
         email: document.getElementById("premEmail").value.trim(),
         password: document.getElementById("premPass").value.trim(),
         expires_at: expires.toISOString()
@@ -335,9 +363,9 @@
       fetchPremiumUsers();
     }
     
-    async function deletePremium(id) { await supabaseClient.from('premium_users').delete().eq('id', id); fetchPremiumUsers(); }
+    async function deletePremium(id) { await supabaseAdmin.from('premium_users').delete().eq('id', id); fetchPremiumUsers(); }
 
     function closeModal() { document.getElementById("modal").style.display = "none"; }
   </script>
 </body>
-</html>
+                                  </html>
