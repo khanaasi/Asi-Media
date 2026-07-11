@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Asi Media - Watch Premium Anime</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AnimeSubStudio - Watch Free Anime Sub/Dub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root { --bg: #09090b; --header: rgba(18, 18, 22, 0.9); --card-bg: rgba(22, 22, 26, 0.6); --primary: #e50914; --primary-glow: rgba(229, 9, 20, 0.35); --text: #ffffff; --text-muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08); }
@@ -12,7 +12,7 @@
     ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #0c0c0e; } ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
     
     .header { background: var(--header); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
-    .header .logo { font-size: 24px; font-weight: 900; color: var(--primary); cursor: pointer; text-transform: uppercase; }
+    .header .logo { font-size: 24px; font-weight: 900; color: var(--primary); cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; }
     .search-bar { flex: 1; margin: 0 40px; max-width: 500px; position: relative; }
     .search-bar input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid var(--border); border-radius: 30px; background: rgba(30, 30, 35, 0.6); color: white; transition: 0.3s; }
     .search-bar input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 15px var(--primary-glow); }
@@ -22,10 +22,13 @@
     .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
     .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); }
 
-    .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: 0.3s; z-index: 1000; border-left: 1px solid var(--border); }
+    /* EXACT VERCEL ZIP SIDEBAR */
+    .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; overflow-y: auto; border-left: 1px solid var(--border); backdrop-filter: blur(20px); }
     .sidebar.open { right: 0; }
-    .sidebar a { display: flex; align-items: center; gap: 12px; color: white; padding: 12px; text-decoration: none; margin: 8px 0; border-radius: 8px; font-weight: bold; cursor: pointer;}
-    .sidebar a:hover { background: rgba(229, 9, 20, 0.1); color: var(--primary); }
+    .sidebar h3 { font-size: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; }
+    .sidebar a { display: flex; align-items: center; gap: 12px; color: white; padding: 12px 15px; text-decoration: none; margin: 8px 0; border-radius: 8px; font-size: 15px; font-weight: bold; transition: 0.2s; cursor: pointer;}
+    .sidebar a:hover { background: rgba(229, 9, 20, 0.1); color: var(--primary); padding-left: 20px; }
+    
     .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; }
     .overlay.show { display: block; }
 
@@ -33,7 +36,7 @@
     .post-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
     .post-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 10px 25px var(--primary-glow); }
     .post-card img { width: 100%; height: 260px; object-fit: cover; }
-    .post-card .category-tag { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+    .post-card .category-tag { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
     .post-card .name { padding: 15px; font-size: 14px; text-align: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .pagination-controls { display: flex; justify-content: center; gap: 15px; margin: 30px auto; }
@@ -70,19 +73,18 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
 </head>
 <body>
 
   <div class="header">
-    <span class="logo" onclick="showHome()">Asi Media</span>
+    <span class="logo" onclick="showHome()">AnimeSubStudio</span>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search anime..." oninput="searchPosts()">
+      <input type="text" id="searchInput" placeholder="Search by name or genre..." oninput="searchPosts()">
       <i class="fa-solid fa-magnifying-glass"></i>
     </div>
     <div class="header-right">
-      <button class="nav-btn" onclick="openLink('group')" style="border-color: #0088cc; color: #0088cc;">Paid Request</button>
-      <button class="nav-btn" onclick="openLink('channel')" style="color: #ffd700; border-color: #ffd700;">Free Premium</button>
+      <button class="nav-btn" onclick="openLink('group')" style="border-color: #0088cc; color: #0088cc;"><i class="fa-solid fa-paper-plane"></i> Paid Request</button>
+      <button class="nav-btn" onclick="openLink('channel')" style="color: #ffd700; border-color: #ffd700;"><i class="fa-solid fa-gem"></i> Free Premium</button>
       <span class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></span>
     </div>
   </div>
@@ -94,15 +96,19 @@
     <a onclick="showSidebarSection('category')"><i class="fa-solid fa-layer-group"></i> Categories</a>
     <a onclick="showSidebarSection('genre')"><i class="fa-solid fa-masks-theater"></i> Genres</a>
     <a onclick="showSidebarSection('az')"><i class="fa-solid fa-arrow-down-a-z"></i> A2Z List</a>
+    <a onclick="openLink('group')"><i class="fa-solid fa-paper-plane" style="color: #0088cc;"></i> Paid Request</a>
+    <a onclick="openLink('channel')"><i class="fa-solid fa-gem" style="color: #ffd700;"></i> Request Premium</a>
+    <a id="tgChannel" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Channel</a>
+    <a id="tgGroup" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Group</a>
   </div>
 
   <div id="mainContent">
-    <h2 class="section-title" id="gridTitle" style="padding-left:30px; margin-top:20px;">All <span style="color:var(--primary)">Anime</span></h2>
+    <h2 class="section-title" id="gridTitle" style="padding-left:30px; margin-top:20px;">All <span style="color:var(--primary)">Anime Series</span></h2>
     <div id="postsGrid" class="posts-grid"></div>
     <div id="paginationContainer" class="pagination-controls"></div>
     
     <div id="detailPage" class="detail-page">
-      <button class="back-btn" onclick="showHome()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="back-btn" onclick="showHome()"><i class="fa-solid fa-arrow-left"></i> Back To Home</button>
       <div id="detailContent"></div>
     </div>
   </div>
@@ -110,7 +116,10 @@
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+    // 🔥 EXACT OLD SUPABASE LINKS 🔥
+    const SUPABASE_URL = "https://kvdfdflygyssnldvahzv.supabase.co"; 
+    const SUPABASE_KEY = "sb_publishable_7MW440PYXtbHbJpAq1v-OQ__1KZvK4R"; 
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let allPosts = [], currentFilteredPosts = [], settings = {};
     let currentPage = 1; const postsPerPage = 12;
@@ -118,15 +127,25 @@
     // 🔥 ANTI-SHARE DEVICE LOCK 🔥
     let currentDeviceId = localStorage.getItem("device_id");
     if (!currentDeviceId) {
-        currentDeviceId = "DEV_" + Math.random().toString(36).substr(2, 9);
+        currentDeviceId = "DEV_" + Math.random().toString(36).substr(2, 9) + Date.now();
         localStorage.setItem("device_id", currentDeviceId);
     }
 
+    // Try-Catch to prevent crashing Menu button if database is empty/blocked
     async function loadApp() {
-      const { data: posts } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
-      if (posts) { allPosts = posts; currentFilteredPosts = posts; renderPosts(posts); }
-      const { data: set } = await supabase.from('site_settings').select('*').eq('id', 1).single();
-      if(set) settings = set;
+      try {
+        const { data: posts } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+        if (posts) { allPosts = posts; currentFilteredPosts = posts; renderPosts(posts); }
+      } catch(e) { console.log("Post Loading Error"); }
+      
+      try {
+        const { data: set } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+        if(set) { 
+            settings = set; 
+            if(settings.channel_link) document.getElementById("tgChannel").href = settings.channel_link;
+            if(settings.group_link) document.getElementById("tgGroup").href = settings.group_link;
+        }
+      } catch(e) {}
     }
 
     function openLink(type) {
@@ -180,10 +199,12 @@
         </div>
       `;
 
-      const { data: eps } = await supabase.from('episodes').select('*').eq('post_id', postId).order('episode_label', {ascending: true});
-      document.getElementById("epListContainer").innerHTML = (eps && eps.length > 0) ? 
-        eps.map(ep => `<button onclick="handleEpisode('${ep.id}', '${ep.episode_label}')">${ep.episode_label}</button>`).join("") :
-        "<p style='color:#777;'>No episodes added yet.</p>";
+      try {
+        const { data: eps } = await supabase.from('episodes').select('*').eq('post_id', postId).order('episode_label', {ascending: true});
+        document.getElementById("epListContainer").innerHTML = (eps && eps.length > 0) ? 
+          eps.map(ep => `<button onclick="handleEpisode('${ep.id}', '${ep.episode_label.replace(/'/g, "\\'")}')">${ep.episode_label}</button>`).join("") :
+          "<p style='color:#777;'>No episodes added yet.</p>";
+      } catch(e) { document.getElementById("epListContainer").innerHTML = "<p>Error loading episodes</p>"; }
     }
 
     function handleEpisode(epId, epLabel) {
@@ -197,7 +218,7 @@
       `);
     }
 
-    // 🔥 SHORTENER REDIRECT LOGIC (100% BYPASS PROOF - AD VIEWS COUNTED) 🔥
+    // 🔥 SHORTENER REDIRECT LOGIC (BYPASS PROOF - VIEWS COUNTED) 🔥
     async function solveShortener(epId) {
       showModal(`<h3>Processing Link...</h3><p>Generating secure route...</p>`);
       try {
@@ -214,7 +235,8 @@
             const res = await fetch(apiUrl);
             const apiData = await res.json();
             if(apiData.status === 'success' || apiData.shortenedUrl) {
-                window.location.href = apiData.shortenedUrl; // ⬅️ THIS WILL FORCE THEM THROUGH THE SHORTENER
+                // REDIRECT IN SAME TAB SO SHORTENER AD LOADS PROPERLY & VIEWS COUNT
+                window.location.href = apiData.shortenedUrl; 
             } else { window.open(ep.original_link, "_blank"); closeModal(); }
         } catch(e) { window.open(ep.original_link, "_blank"); closeModal(); }
       } catch (err) { alert("System Error."); closeModal(); }
@@ -299,11 +321,14 @@
       }
     }
 
+    // UI CONTROLS (CRASH PROOF)
     function showModal(html) { document.getElementById("modalContent").innerHTML = html; document.getElementById("modal").classList.add("active"); }
     function closeModal() { document.getElementById("modal").classList.remove("active"); }
     
     function showHome() { document.getElementById("postsGrid").style.display = ""; document.getElementById("gridTitle").style.display = ""; document.getElementById("paginationContainer").style.display = ""; document.getElementById("detailPage").classList.remove("active"); currentPage = 1; renderPosts(allPosts); }
     function searchPosts() { currentPage = 1; const term = document.getElementById("searchInput").value.toLowerCase(); currentFilteredPosts = allPosts.filter(p => p.name.toLowerCase().includes(term) || (p.genres && p.genres.toLowerCase().includes(term)) || (p.category && p.category.toLowerCase().includes(term))); renderPosts(currentFilteredPosts); }
+    
+    // HAMBURGER MENU TOGGLE
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
 
     function showSidebarSection(type) {
@@ -332,4 +357,4 @@
     window.onload = loadApp;
   </script>
 </body>
-</html>
+  </html>
