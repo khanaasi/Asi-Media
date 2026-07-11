@@ -162,8 +162,8 @@
       if (!secret || !pass) return alert("Please fill all details to login.");
 
       try {
-        // Init Admin Client locally
-        const tempClient = window.supabase.createClient(SUPABASE_URL, secret);
+        // Init Admin Client locally - FIXED: ab window.SUPABASE_URL use ho raha hai
+        const tempClient = window.supabase.createClient(window.SUPABASE_URL, secret);
 
         // Fetching exact password from database
         const { data, error } = await tempClient.from('settings').select('admin_password').single();
@@ -192,7 +192,7 @@
     // Auto-Login Check
     window.onload = () => {
       if (localStorage.getItem("asi_admin_logged_in") === "true" && savedSecret) {
-        supabaseAdmin = window.supabase.createClient(SUPABASE_URL, savedSecret);
+        supabaseAdmin = window.supabase.createClient(window.SUPABASE_URL, savedSecret);
         document.getElementById("loginScreen").style.display = "none";
         loadInitialData();
       }
@@ -388,4 +388,4 @@
     function closeModal() { document.getElementById("modal").style.display = "none"; }
   </script>
 </body>
-</html>
+        </html>
