@@ -2,127 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AnimeSubStudio - Watch Free Anime Sub/Dub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asi Media - Watch Premium Anime</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root { 
-      --bg: #09090b; 
-      --header: rgba(18, 18, 22, 0.9); 
-      --card-bg: rgba(22, 22, 26, 0.6);
-      --primary: #e50914; 
-      --primary-glow: rgba(229, 9, 20, 0.35);
-      --text: #ffffff; 
-      --text-muted: #a1a1aa;
-      --border: rgba(255, 255, 255, 0.08); 
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+    :root { --bg: #09090b; --header: rgba(18, 18, 22, 0.9); --card-bg: rgba(22, 22, 26, 0.6); --primary: #e50914; --primary-glow: rgba(229, 9, 20, 0.35); --text: #ffffff; --text-muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08); }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
     body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+    ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #0c0c0e; } ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
     
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #0c0c0e; }
-    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
     .header { background: var(--header); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
-    .header .logo { font-size: 24px; font-weight: 900; color: var(--primary); cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 15px var(--primary-glow); }
+    .header .logo { font-size: 24px; font-weight: 900; color: var(--primary); cursor: pointer; text-transform: uppercase; }
     .search-bar { flex: 1; margin: 0 40px; max-width: 500px; position: relative; }
-    .search-bar input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid var(--border); border-radius: 30px; background: rgba(30, 30, 35, 0.6); color: white; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .search-bar input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 15px var(--primary-glow); background: rgba(30, 30, 35, 0.9); }
+    .search-bar input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid var(--border); border-radius: 30px; background: rgba(30, 30, 35, 0.6); color: white; transition: 0.3s; }
+    .search-bar input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 15px var(--primary-glow); }
     .search-bar i { position: absolute; left: 18px; top: 15px; color: #a1a1aa; }
     .header-right { display: flex; align-items: center; gap: 15px; }
-    
-    .nav-btn { background: none; border: 1px solid var(--border); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; }
-    .nav-btn:hover { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
-    .paid-req-btn { border-color: #0088cc !important; color: #0088cc !important; }
-    .paid-req-btn:hover { background: rgba(0, 136, 204, 0.1) !important; box-shadow: 0 0 10px rgba(0, 136, 204, 0.35) !important; }
+    .nav-btn { background: none; border: 1px solid var(--border); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+    .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); }
 
-    .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); transition: 0.2s; }
-    .menu-btn:hover { transform: scale(1.1); }
-
-    .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; overflow-y: auto; border-left: 1px solid var(--border); backdrop-filter: blur(20px); }
+    .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: 0.3s; z-index: 1000; border-left: 1px solid var(--border); }
     .sidebar.open { right: 0; }
-    .sidebar h3 { font-size: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; }
-    .sidebar a { display: flex; align-items: center; gap: 12px; color: white; padding: 12px 15px; text-decoration: none; margin: 8px 0; border-radius: 8px; font-size: 15px; font-weight: bold; transition: 0.2s; cursor: pointer;}
-    .sidebar a:hover { background: rgba(229, 9, 20, 0.1); color: var(--primary); padding-left: 20px; }
-    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; backdrop-filter: blur(4px); }
+    .sidebar a { display: flex; align-items: center; gap: 12px; color: white; padding: 12px; text-decoration: none; margin: 8px 0; border-radius: 8px; font-weight: bold; cursor: pointer;}
+    .sidebar a:hover { background: rgba(229, 9, 20, 0.1); color: var(--primary); }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; }
     .overlay.show { display: block; }
 
-    .section-title { padding: 40px 30px 10px 30px; font-size: 26px; text-transform: uppercase; letter-spacing: 1px; color: #fff; font-weight: 800; }
-    .section-title span { color: var(--primary); }
     .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; padding: 20px 30px; }
-    
-    .post-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; border: 1px solid var(--border); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .post-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
     .post-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 10px 25px var(--primary-glow); }
-    .post-card img { width: 100%; height: 260px; object-fit: cover; transition: 0.4s; }
-    .post-card:hover img { transform: scale(1.05); }
-    .post-card .category-tag { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
-    .post-card .name { padding: 15px; font-size: 14px; text-align: center; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .post-card img { width: 100%; height: 260px; object-fit: cover; }
+    .post-card .category-tag { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+    .post-card .name { padding: 15px; font-size: 14px; text-align: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 30px auto; padding-bottom: 30px; }
-
-    .detail-page { display: none; padding: 40px 30px; max-width: 1100px; margin: 40px auto; background: rgba(22, 22, 26, 0.8); border-radius: 16px; border: 1px solid var(--border); backdrop-filter: blur(15px); box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
-    .detail-page.active { display: block; }
-    .back-btn { background: none; color: var(--primary); border: 1px solid var(--border); padding: 8px 18px; border-radius: 20px; font-size: 14px; cursor: pointer; margin-bottom: 30px; font-weight: bold; transition: 0.2s; }
-    .back-btn:hover { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 12px var(--primary-glow); }
-    .detail-header { display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 40px; }
-    .detail-header img { width: 260px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 8px 25px rgba(0,0,0,0.8); }
-    .detail-info { flex: 1; min-width: 300px; }
-    .detail-info h2 { font-size: 38px; margin-bottom: 20px; color: var(--primary); font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 15px var(--primary-glow); }
-    .detail-info p { margin-bottom: 14px; font-size: 15px; line-height: 1.7; color: var(--text-muted); }
-    .detail-info p strong { color: white; }
+    .pagination-controls { display: flex; justify-content: center; gap: 15px; margin: 30px auto; }
     
-    .episodes { margin-top: 40px; background: rgba(15, 15, 20, 0.6); padding: 30px; border-radius: 12px; border: 1px solid var(--border); }
-    .episodes h3 { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 25px; font-size: 22px; text-transform: uppercase; font-weight: 800; }
-    .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-    .episodes button { background: #1f1f23; color: white; border: 1px solid var(--border); padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; transition: all 0.2s; }
-    .episodes button:hover { background: var(--primary); border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 5px 15px var(--primary-glow); }
+    .detail-page { display: none; padding: 40px 30px; max-width: 1100px; margin: 40px auto; background: rgba(22, 22, 26, 0.8); border-radius: 16px; border: 1px solid var(--border); }
+    .detail-page.active { display: block; }
+    .back-btn { background: none; color: var(--primary); border: 1px solid var(--border); padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-bottom: 20px;}
+    .detail-header { display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 40px; }
+    .detail-header img { width: 260px; border-radius: 12px; }
+    .detail-info { flex: 1; }
+    .detail-info h2 { font-size: 38px; color: var(--primary); margin-bottom: 15px;}
+    .detail-info p { margin-bottom: 14px; color: var(--text-muted); font-size: 15px;}
+    
+    .episodes { background: rgba(15, 15, 20, 0.6); padding: 30px; border-radius: 12px; }
+    .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-top:20px; }
+    .episodes button { background: #1f1f23; color: white; border: 1px solid var(--border); padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+    .episodes button:hover { background: var(--primary); border-color: var(--primary); transform: translateY(-3px);}
 
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 2000; padding: 20px; backdrop-filter: blur(8px); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
     .modal.active { display: flex; }
-    .modal-box { background: #121214; border: 1px solid var(--border); padding: 40px; border-radius: 16px; text-align: center; width: 100%; max-width: 440px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
-    .modal-box h3 { margin-bottom: 15px; color: var(--primary); font-size: 24px; font-weight: 800; }
-    .modal-box p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
-    .modal-box input { width: 100%; padding: 14px; margin-bottom: 15px; background: #1a1a1f; border: 1px solid var(--border); color: white; border-radius: 8px; text-align: center; font-size: 15px; transition: 0.3s; }
-    .modal-box input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 10px var(--primary-glow); }
-    .modal-box button { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; margin: 8px 0; cursor: pointer; font-weight: bold; font-size: 14px; width: 100%; transition: 0.2s; }
-    .modal-box button:hover { background: #b8070e; box-shadow: 0 0 12px var(--primary-glow); }
+    .modal-box { background: #121214; border: 1px solid var(--border); padding: 40px; border-radius: 16px; text-align: center; width: 100%; max-width: 440px; position: relative; }
+    .modal-box h3 { margin-bottom: 15px; color: var(--primary); }
+    .modal-box input { width: 100%; padding: 14px; margin-bottom: 15px; background: #1a1a1f; border: 1px solid var(--border); color: white; border-radius: 8px; text-align: center; }
+    .modal-box button { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; margin: 8px 0; cursor: pointer; font-weight: bold; width: 100%; }
     .modal-box .secondary-btn { background: #27272a; border: 1px solid var(--border); }
-    .modal-box .secondary-btn:hover { background: #3f3f46; }
-    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; transition: 0.2s; }
-    .close-modal:hover { color: white; }
+    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; }
 
     @media (max-width: 768px) {
       .header { padding: 12px 15px; flex-wrap: wrap; gap: 12px; }
-      .header .logo { font-size: 20px; }
-      .search-bar { order: 3; margin: 0; max-width: 100%; width: 100%; flex: 1 1 100%; }
-      .header-right { gap: 8px; }
-      .header-right .nav-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-size: 11px; border-radius: 15px; }
+      .search-bar { order: 3; margin: 0; width: 100%; flex: 1 1 100%; }
       .posts-grid { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 15px; padding: 15px; }
       .post-card img { height: 190px; }
-      .post-card .name { padding: 10px; font-size: 13px; }
-      .detail-page { padding: 20px 15px; margin: 15px; }
-      .detail-header { gap: 20px; justify-content: center; }
       .detail-header img { width: 180px; }
-      .detail-info { text-align: center; }
-      .detail-info h2 { font-size: 28px; }
-      .episodes { padding: 20px 15px; }
-      .episodes-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-      .modal-box { padding: 25px 15px; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
 </head>
 <body>
 
   <div class="header">
-    <span class="logo" onclick="showHome()">AnimeSubStudio</span>
+    <span class="logo" onclick="showHome()">Asi Media</span>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search by name or genre..." oninput="searchPosts()">
+      <input type="text" id="searchInput" placeholder="Search anime..." oninput="searchPosts()">
       <i class="fa-solid fa-magnifying-glass"></i>
     </div>
     <div class="header-right">
-      <button class="nav-btn paid-req-btn" onclick="openPaidRequest()"><i class="fa-solid fa-paper-plane"></i> Paid Request</button>
-      <button class="nav-btn" onclick="openPremiumRequestModal()"><i class="fa-solid fa-gem" style="color: #ffd700;"></i> Free Premium</button>
+      <button class="nav-btn" onclick="openLink('group')" style="border-color: #0088cc; color: #0088cc;">Paid Request</button>
+      <button class="nav-btn" onclick="openLink('channel')" style="color: #ffd700; border-color: #ffd700;">Free Premium</button>
       <span class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></span>
     </div>
   </div>
@@ -134,208 +94,174 @@
     <a onclick="showSidebarSection('category')"><i class="fa-solid fa-layer-group"></i> Categories</a>
     <a onclick="showSidebarSection('genre')"><i class="fa-solid fa-masks-theater"></i> Genres</a>
     <a onclick="showSidebarSection('az')"><i class="fa-solid fa-arrow-down-a-z"></i> A2Z List</a>
-    <a onclick="openPaidRequest()"><i class="fa-solid fa-paper-plane" style="color: #0088cc;"></i> Paid Request</a>
-    <a onclick="openPremiumRequestModal()"><i class="fa-solid fa-gem" style="color: #ffd700;"></i> Request Premium</a>
-    <a id="tgChannel" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Channel</a>
-    <a id="tgGroup" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Group</a>
   </div>
 
   <div id="mainContent">
-    <h2 class="section-title" id="gridTitle">All <span>Anime Series</span></h2>
+    <h2 class="section-title" id="gridTitle" style="padding-left:30px; margin-top:20px;">All <span style="color:var(--primary)">Anime</span></h2>
     <div id="postsGrid" class="posts-grid"></div>
     <div id="paginationContainer" class="pagination-controls"></div>
     
     <div id="detailPage" class="detail-page">
-      <button class="back-btn" onclick="showHome()"><i class="fa-solid fa-arrow-left"></i> Back To Home</button>
+      <button class="back-btn" onclick="showHome()"><i class="fa-solid fa-arrow-left"></i> Back</button>
       <div id="detailContent"></div>
     </div>
   </div>
 
-  <div class="modal" id="modal">
-    <div class="modal-box" id="modalContent"></div>
-  </div>
+  <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    // ==========================================
-    // 🔥 LINKS & API SETUP (YE APNE HISAB SE BHAR LO) 🔥
-    // ==========================================
-    const API_BASE = "https://huggingface.co/spaces/Asif123anime/Mangajii";  // ⬅️ APNA HF URL YAHA DAALEIN
-    const PAID_REQUEST_LINK = "https://t.me/hindisubanime_q";  // ⬅️ PAID REQUEST KA TG LINK
-    const PREMIUM_REQUEST_LINK = "https://t.me/hindisubanime_q";  // ⬅️ FREE PREMIUM REQUEST (TG GROUP/BOT LINK)
-    // ==========================================
+    const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
-    let allPosts = [];
-    let currentFilteredPosts = [];
-    let settings = {};
-    let currentPage = 1;
-    const postsPerPage = 12;
+    let allPosts = [], currentFilteredPosts = [], settings = {};
+    let currentPage = 1; const postsPerPage = 12;
 
-    // 🔥 DEVICE ID GENERATION FOR ANTI-SHARE SYSTEM 🔥
+    // 🔥 ANTI-SHARE DEVICE LOCK 🔥
     let currentDeviceId = localStorage.getItem("device_id");
     if (!currentDeviceId) {
-        currentDeviceId = "device_" + Math.random().toString(36).substr(2, 9) + "_" + Date.now();
+        currentDeviceId = "DEV_" + Math.random().toString(36).substr(2, 9);
         localStorage.setItem("device_id", currentDeviceId);
     }
 
     async function loadApp() {
-      try {
-        const res = await fetch(`${API_BASE}/api/posts`);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          allPosts = data.reverse();
-          currentFilteredPosts = allPosts;
-          renderPosts(currentFilteredPosts);
-        }
-      } catch (err) {
-        document.getElementById("postsGrid").innerHTML = "<h3 style='color:#e50914; grid-column: 1/-1; text-align:center;'>Server Starting... Please refresh after 1 minute.</h3>";
-      }
+      const { data: posts } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+      if (posts) { allPosts = posts; currentFilteredPosts = posts; renderPosts(posts); }
+      const { data: set } = await supabase.from('site_settings').select('*').eq('id', 1).single();
+      if(set) settings = set;
+    }
 
-      try {
-        const setRes = await fetch(`${API_BASE}/api/settings`);
-        settings = await setRes.json();
-        document.getElementById("tgChannel").href = settings.channel_link || "#";
-        document.getElementById("tgGroup").href = settings.group_link || "#";
-      } catch (err) { console.log("Settings Load Error"); }
+    function openLink(type) {
+      if(type === 'group' && settings.group_link) window.open(settings.group_link, '_blank');
+      if(type === 'channel' && settings.channel_link) window.open(settings.channel_link, '_blank');
     }
 
     function renderPosts(posts) {
-      currentFilteredPosts = posts;
-      const grid = document.getElementById("postsGrid");
-      const pagContainer = document.getElementById("paginationContainer");
-      
-      if (posts.length === 0) {
-        grid.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:50px 0; color:#777;'>No Anime Found.</div>";
-        pagContainer.innerHTML = "";
-        return;
-      }
+      const grid = document.getElementById("postsGrid"), pag = document.getElementById("paginationContainer");
+      if (posts.length === 0) { grid.innerHTML = "<h3 style='color:#777;grid-column:1/-1'>No Results Found.</h3>"; pag.innerHTML = ""; return; }
 
-      const startIndex = (currentPage - 1) * postsPerPage;
-      const endIndex = startIndex + postsPerPage;
-      const paginatedData = posts.slice(startIndex, endIndex);
-
-      grid.innerHTML = paginatedData.map(p => `
+      const start = (currentPage - 1) * postsPerPage, paginated = posts.slice(start, start + postsPerPage);
+      grid.innerHTML = paginated.map(p => `
         <div class="post-card" onclick="showDetail('${p.id}')">
           <img src="${p.image_url}" alt="${p.name}">
-          <span class="category-tag">${p.category}</span>
+          <span class="category-tag">${p.category || 'Anime'}</span>
           <div class="name">${p.name}</div>
         </div>
       `).join("");
 
       const totalPages = Math.ceil(posts.length / postsPerPage);
-      if (totalPages <= 1) {
-        pagContainer.innerHTML = "";
-      } else {
-        pagContainer.innerHTML = `
-          <button class="nav-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled style="opacity: 0.5;"' : ''}><i class="fa-solid fa-chevron-left"></i> Prev</button>
-          <span style="font-weight: bold; color: var(--text-muted);">Page ${currentPage} of ${totalPages}</span>
-          <button class="nav-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled style="opacity: 0.5;"' : ''}>Next <i class="fa-solid fa-chevron-right"></i></button>
-        `;
-      }
+      pag.innerHTML = totalPages > 1 ? `
+        <button class="nav-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled style="opacity:0.5"' : ''}>Prev</button>
+        <span style="color:var(--text-muted)">Page ${currentPage} of ${totalPages}</span>
+        <button class="nav-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled style="opacity:0.5"' : ''}>Next</button>
+      ` : "";
     }
-
-    function changePage(step) {
-      currentPage += step;
-      renderPosts(currentFilteredPosts);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    function changePage(step) { currentPage += step; renderPosts(currentFilteredPosts); window.scrollTo({ top: 0, behavior: "smooth" }); }
 
     async function showDetail(postId) {
-      const post = allPosts.find(p => p.id === postId);
-      if (!post) return;
-      
+      const post = allPosts.find(p => p.id === postId); if (!post) return;
       document.getElementById("postsGrid").style.display = "none";
       document.getElementById("gridTitle").style.display = "none";
       document.getElementById("paginationContainer").style.display = "none";
       document.getElementById("detailPage").classList.add("active");
       
-      let genres = post.genres ? post.genres : "N/A";
-      
       document.getElementById("detailContent").innerHTML = `
         <div class="detail-header">
-          <img src="${post.image_url}" alt="${post.name}">
+          <img src="${post.image_url}">
           <div class="detail-info">
             <h2>${post.name}</h2>
-            <p><strong>Genre:</strong> ${genres}</p>
-            <p><strong>Release Date:</strong> ${post.release_date || "N/A"}</p>
+            <p><strong>Genre:</strong> ${post.genres || "N/A"}</p>
+            <p><strong>Release:</strong> ${post.release_date || "N/A"}</p>
             <p><strong>Season:</strong> ${post.season || "N/A"}</p>
-            <p><strong>Story Description:</strong> ${post.short_story || "No story available."}</p>
+            <p><strong>Story:</strong> ${post.short_story || "No details."}</p>
           </div>
         </div>
         <div class="episodes">
-          <h3>EPISODE LIST</h3>
-          <div class="episodes-grid" id="epListContainer">Loading episodes...</div>
+          <h3 style="border-bottom:1px solid var(--border); padding-bottom:10px;">Episodes List</h3>
+          <div class="episodes-grid" id="epListContainer">Loading...</div>
         </div>
       `;
 
-      try {
-        const epRes = await fetch(`${API_BASE}/api/episodes/${postId}`);
-        const episodes = await epRes.json();
-        const epContainer = document.getElementById("epListContainer");
-        if(episodes.length === 0) {
-            epContainer.innerHTML = "<p style='color:#777;'>No episodes added yet.</p>";
-        } else {
-            epContainer.innerHTML = episodes.map(ep => `
-              <button onclick="handleEpisode('${ep.id}', '${ep.episode_label.replace(/'/g, "\\'")}')">${ep.episode_label}</button>
-            `).join("");
-        }
-      } catch(e) {
-        document.getElementById("epListContainer").innerHTML = "<p style='color:red;'>Failed to load episodes.</p>";
-      }
+      const { data: eps } = await supabase.from('episodes').select('*').eq('post_id', postId).order('episode_label', {ascending: true});
+      document.getElementById("epListContainer").innerHTML = (eps && eps.length > 0) ? 
+        eps.map(ep => `<button onclick="handleEpisode('${ep.id}', '${ep.episode_label}')">${ep.episode_label}</button>`).join("") :
+        "<p style='color:#777;'>No episodes added yet.</p>";
     }
 
     function handleEpisode(epId, epLabel) {
       showModal(`
         <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h3 style="color: #e50914;">Select Option</h3>
-        <p style="margin-bottom:20px; font-weight:bold; color: #fff;">${epLabel}</p>
-        
-        <button onclick="solveShortener('${epId}')"><i class="fa-solid fa-link"></i> Download Free (Ads Link)</button>
-        <button class="secondary-btn" onclick="checkPremiumOption('${epId}')"><i class="fa-solid fa-user-shield"></i> Premium Direct Link</button>
+        <h3 style="color: #e50914;">${epLabel}</h3>
+        <p style="margin-bottom:20px; font-size:13px; color:#aaa;">Choose link type</p>
+        <button onclick="solveShortener('${epId}')"><i class="fa-solid fa-link"></i> Download (Ads Link)</button>
+        <button onclick="openPlayModal('${epId}')" style="background:#00b359;"><i class="fa-solid fa-play"></i> Play Video (Password)</button>
+        <button class="secondary-btn" onclick="checkPremium('${epId}')"><i class="fa-solid fa-crown" style="color:#ffd700;"></i> Premium Direct Link</button>
       `);
     }
 
+    // 🔥 SHORTENER REDIRECT LOGIC (100% BYPASS PROOF - AD VIEWS COUNTED) 🔥
     async function solveShortener(epId) {
-      showModal(`<h3>Shortening Link...</h3><p>Please wait...</p>`);
+      showModal(`<h3>Processing Link...</h3><p>Generating secure route...</p>`);
       try {
-        const res = await fetch(`${API_BASE}/api/shorten?ep_id=${epId}`);
-        const data = await res.json();
+        const { data: ep } = await supabase.from('episodes').select('original_link').eq('id', epId).single();
+        if(!ep || !ep.original_link) return alert("Link Error!");
+
+        const { data: shorteners } = await supabase.from('shorteners').select('*');
+        if(!shorteners || shorteners.length === 0) { window.open(ep.original_link, "_blank"); closeModal(); return; }
+
+        const sh = shorteners[Math.floor(Math.random() * shorteners.length)];
+        const apiUrl = `https://${sh.dashboard_url}/api?api=${sh.api_key}&url=${encodeURIComponent(ep.original_link)}`;
         
-        if (data.shortLink) {
-          window.open(data.shortLink, "_blank");
+        try {
+            const res = await fetch(apiUrl);
+            const apiData = await res.json();
+            if(apiData.status === 'success' || apiData.shortenedUrl) {
+                window.location.href = apiData.shortenedUrl; // ⬅️ THIS WILL FORCE THEM THROUGH THE SHORTENER
+            } else { window.open(ep.original_link, "_blank"); closeModal(); }
+        } catch(e) { window.open(ep.original_link, "_blank"); closeModal(); }
+      } catch (err) { alert("System Error."); closeModal(); }
+    }
+
+    // 🔥 PLAY VIDEO PASSWORD CHECK 🔥
+    function openPlayModal(epId) {
+      showModal(`
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Watch Video</h3>
+        <p style="font-size:13px; color:#aaa;">Enter Stream Password</p>
+        <input type="password" id="playPassInput" placeholder="Enter Password">
+        <button onclick="checkPlayPass('${epId}')" style="background:#00b359;">Stream Video</button>
+      `);
+    }
+
+    async function checkPlayPass(epId) {
+      const pass = document.getElementById("playPassInput").value;
+      if (pass === settings.player_password) {
+        showModal(`<h3>Loading Video...</h3>`);
+        const { data: ep } = await supabase.from('episodes').select('play_link').eq('id', epId).single();
+        if (ep && ep.play_link) {
+          window.open(ep.play_link, "_blank");
           closeModal();
         } else {
-          alert("Error: Link unavailable.");
-          closeModal();
+          alert("Play link not available for this episode!"); closeModal();
         }
-      } catch (e) {
-        alert("Server failed.");
-        closeModal();
+      } else {
+        alert("Incorrect Password!");
       }
     }
 
-    async function checkPremiumOption(epId) {
-      const savedGmail = localStorage.getItem("premium_gmail");
-
-      if (savedGmail) {
-        showModal(`<h3>Direct Loading...</h3><p>Checking active login profile...</p>`);
-        try {
-          const res = await fetch(`${API_BASE}/api/premium-bypass`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: savedGmail, device_id: currentDeviceId, ep_id: epId })
-          });
-          const data = await res.json();
-          if (data.success && data.original_link) {
-            window.open(data.original_link, "_blank");
+    // 🔥 ANTI-SHARE PREMIUM AUTHENTICATION 🔥
+    async function checkPremium(epId) {
+      const savedEmail = localStorage.getItem("prem_email");
+      if (savedEmail) {
+        showModal(`<h3>Loading...</h3><p>Verifying profile...</p>`);
+        const { data: user } = await supabase.from('premium_users').select('*').eq('username', savedEmail).single();
+        
+        if (user && user.device_id === currentDeviceId) {
+            const { data: ep } = await supabase.from('episodes').select('original_link').eq('id', epId).single();
+            window.open(ep.original_link, "_blank");
             closeModal();
-          } else {
-            alert(data.error || "Profile expired!");
-            localStorage.removeItem("premium_gmail");
+        } else {
+            localStorage.removeItem("prem_email");
+            alert("Session Expired or Device Locked to another phone!");
             openPremiumLogin(epId);
-          }
-        } catch (err) {
-          localStorage.removeItem("premium_gmail");
-          openPremiumLogin(epId);
         }
       } else {
         openPremiumLogin(epId);
@@ -345,132 +271,63 @@
     function openPremiumLogin(epId) {
       showModal(`
         <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h3>Premium Authenticate</h3>
-        <p>Direct login via registered Gmail ID & Password</p>
-        <input type="email" id="pUser" placeholder="Enter Gmail ID">
-        <input type="password" id="pPass" placeholder="Enter Password">
-        <button onclick="verifyPremium('${epId}')">Verify & Bypass</button>
+        <h3 style="color:#ffd700;">Premium Login</h3>
+        <p style="margin-bottom:20px; font-size:12px; color:#aaa;">Login required. Sharing IDs will permanently block your account on this device.</p>
+        <input type="email" id="pUser" placeholder="Email Address">
+        <input type="password" id="pPass" placeholder="Password">
+        <button onclick="loginPremium('${epId}')">Login & Access</button>
       `);
     }
 
-    async function verifyPremium(epId) {
-      const username = document.getElementById("pUser").value.trim();
-      const password = document.getElementById("pPass").value.trim();
+    async function loginPremium(epId) {
+      const email = document.getElementById("pUser").value;
+      const pass = document.getElementById("pPass").value;
 
-      try {
-        const res = await fetch(`${API_BASE}/api/premium-login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password, device_id: currentDeviceId })
-        });
-        const data = await res.json();
-        
-        if (data.success) {
-          localStorage.setItem("premium_gmail", data.username);
-          checkPremiumOption(epId);
-        } else {
-          alert(data.error || "Verification fail ho gaya!");
-        }
-      } catch (e) { alert("System request error."); }
-    }
-
-    function openPremiumRequestModal() { window.open(PREMIUM_REQUEST_LINK, "_blank"); }
-    function openPaidRequest() { window.open(PAID_REQUEST_LINK, "_blank"); }
-
-    function showModal(html) {
-      const modal = document.getElementById("modal");
-      document.getElementById("modalContent").innerHTML = html;
-      modal.classList.add("active");
-    }
-
-    function closeModal() {
-      document.getElementById("modal").classList.remove("active");
-    }
-
-    function showHome() {
-      document.getElementById("postsGrid").style.display = "";
-      document.getElementById("gridTitle").style.display = "";
-      document.getElementById("gridTitle").innerHTML = "All <span>Anime Series</span>";
-      document.getElementById("paginationContainer").style.display = "";
-      document.getElementById("detailPage").classList.remove("active");
-      currentPage = 1;
-      renderPosts(allPosts);
-    }
-
-    function searchPosts() {
-      currentPage = 1; 
-      const term = document.getElementById("searchInput").value.toLowerCase();
-      currentFilteredPosts = allPosts.filter(p => 
-        p.name.toLowerCase().includes(term) || 
-        (p.genres && p.genres.toLowerCase().includes(term)) ||
-        (p.category && p.category.toLowerCase().includes(term))
-      );
-      renderPosts(currentFilteredPosts);
-    }
-
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("open");
-      document.getElementById("overlay").classList.toggle("show");
-    }
-
-    function showSidebarSection(type) {
-      toggleSidebar();
-      if (type === "category") {
-        const categories = [...new Set(allPosts.map(p => p.category).filter(Boolean))];
-        showModal(`
-          <span class="close-modal" onclick="closeModal()">&times;</span>
-          <h3 style="margin-bottom:15px;">Categories</h3>
-          <div style="display:flex; flex-direction:column; gap:10px; max-height:300px; overflow-y:auto;">
-            ${categories.map(cat => `<button style="margin: 4px 0;" onclick="filterByCategory('${cat}')">${cat}</button>`).join("")}
-          </div>
-        `);
-      } else if (type === "genre") {
-        const allGenres = allPosts.flatMap(p => p.genres ? p.genres.split(',').map(g=>g.trim()) : []);
-        const uniqueGenres = [...new Set(allGenres)].filter(Boolean);
-        showModal(`
-          <span class="close-modal" onclick="closeModal()">&times;</span>
-          <h3 style="margin-bottom:15px;">Genres</h3>
-          <div style="display:flex; flex-direction:column; gap:10px; max-height:300px; overflow-y:auto;">
-            ${uniqueGenres.map(g => `<button style="margin: 4px 0;" onclick="filterByGenre('${g}')">${g}</button>`).join("")}
-          </div>
-        `);
-      } else if (type === "az") {
-        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
-        showModal(`
-          <span class="close-modal" onclick="closeModal()">&times;</span>
-          <h3 style="margin-bottom:15px;">A2Z Filter</h3>
-          <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap:8px;">
-            ${letters.map(l => `<button style="width:100%; margin:0; padding:10px 0;" onclick="filterByLetter('${l}')">${l}</button>`).join("")}
-          </div>
-        `);
+      showModal(`<h3>Authenticating...</h3>`);
+      const { data: user } = await supabase.from('premium_users').select('*').eq('username', email).eq('password', pass).single();
+      
+      if(user) {
+          if(user.device_id && user.device_id !== currentDeviceId) {
+              alert("Ye ID pehle hi kisi aur device me chal rahi hai! Sharing is not allowed."); closeModal();
+          } else {
+              if(!user.device_id) { await supabase.from('premium_users').update({ device_id: currentDeviceId }).eq('id', user.id); }
+              localStorage.setItem("prem_email", email);
+              checkPremium(epId);
+          }
+      } else {
+          alert("Invalid Email or Password!"); closeModal();
       }
     }
 
-    function filterByCategory(cat) {
-      closeModal();
-      currentPage = 1;
-      document.getElementById("gridTitle").innerHTML = `Category: <span>${cat}</span>`;
-      renderPosts(allPosts.filter(p => p.category === cat));
-    }
+    function showModal(html) { document.getElementById("modalContent").innerHTML = html; document.getElementById("modal").classList.add("active"); }
+    function closeModal() { document.getElementById("modal").classList.remove("active"); }
+    
+    function showHome() { document.getElementById("postsGrid").style.display = ""; document.getElementById("gridTitle").style.display = ""; document.getElementById("paginationContainer").style.display = ""; document.getElementById("detailPage").classList.remove("active"); currentPage = 1; renderPosts(allPosts); }
+    function searchPosts() { currentPage = 1; const term = document.getElementById("searchInput").value.toLowerCase(); currentFilteredPosts = allPosts.filter(p => p.name.toLowerCase().includes(term) || (p.genres && p.genres.toLowerCase().includes(term)) || (p.category && p.category.toLowerCase().includes(term))); renderPosts(currentFilteredPosts); }
+    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
 
-    function filterByGenre(genre) {
-      closeModal();
-      currentPage = 1;
-      document.getElementById("gridTitle").innerHTML = `Genre: <span>${genre}</span>`;
-      renderPosts(allPosts.filter(p => p.genres && p.genres.toLowerCase().includes(genre.toLowerCase())));
-    }
-
-    function filterByLetter(letter) {
-      closeModal();
-      currentPage = 1;
-      document.getElementById("gridTitle").innerHTML = `Starting Letter: <span>${letter}</span>`;
-      renderPosts(allPosts.filter(p => p.name.toUpperCase().startsWith(letter)));
-    }
-
-    function showAllPosts() {
+    function showSidebarSection(type) {
       toggleSidebar();
-      showHome();
+      if (type === 'category') {
+        const cats = [...new Set(allPosts.map(p => p.category).filter(Boolean))];
+        showModal(`<span class="close-modal" onclick="closeModal()">&times;</span><h3>Categories</h3><div style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;">${cats.map(c => `<button class="secondary-btn" onclick="filterData('category', '${c}')">${c}</button>`).join("")}</div>`);
+      } else if (type === 'genre') {
+        const genres = [...new Set(allPosts.flatMap(p => p.genres ? p.genres.split(',').map(g=>g.trim()) : []).filter(Boolean))];
+        showModal(`<span class="close-modal" onclick="closeModal()">&times;</span><h3>Genres</h3><div style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;">${genres.map(g => `<button class="secondary-btn" onclick="filterData('genre', '${g}')">${g}</button>`).join("")}</div>`);
+      } else if (type === 'az') {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        showModal(`<span class="close-modal" onclick="closeModal()">&times;</span><h3>A2Z Filter</h3><div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;">${letters.map(l => `<button class="secondary-btn" style="margin:0; padding:10px 0;" onclick="filterData('az', '${l}')">${l}</button>`).join("")}</div>`);
+      }
     }
+
+    function filterData(type, val) {
+      closeModal(); currentPage = 1; document.getElementById("gridTitle").innerHTML = `Filtered: <span>${val}</span>`;
+      if(type === 'category') currentFilteredPosts = allPosts.filter(p => p.category === val);
+      if(type === 'genre') currentFilteredPosts = allPosts.filter(p => p.genres && p.genres.toLowerCase().includes(val.toLowerCase()));
+      if(type === 'az') currentFilteredPosts = allPosts.filter(p => p.name.toUpperCase().startsWith(val));
+      renderPosts(currentFilteredPosts);
+    }
+    function showAllPosts() { toggleSidebar(); showHome(); }
 
     window.onload = loadApp;
   </script>
