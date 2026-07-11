@@ -6,60 +6,60 @@
   <title>Asi Media - Admin Panel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- supabase-config.js import -->
   <script src="supabase-config.js"></script>
   <style>
-    :root { --bg: #0b0b0c; --panel: #121214; --primary: #e50914; --text: #ffffff; --border: #222226; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    body { background: var(--bg); color: var(--text); overflow-x: hidden; }
-    
-    #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-    .login-box { background: var(--panel); padding: 40px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .login-box h2 { color: var(--primary); margin-bottom: 10px; }
-    .login-box p { color: #a1a1aa; font-size: 13px; margin-bottom: 25px; }
-    .login-box input { width: 100%; padding: 14px; margin-bottom: 20px; background: #1c1c21; border: 1px solid var(--border); color: white; border-radius: 8px; text-align: center; font-size: 14px; }
-    .login-box button { background: var(--primary); color: white; width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; }
-    
-    .header { background: var(--panel); padding: 15px 25px; display: flex; align-items: center; border-bottom: 1px solid var(--border); }
-    .menu-toggle { font-size: 24px; cursor: pointer; margin-right: 20px; color: var(--primary); }
-    .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; background: var(--panel); z-index: 999; transition: 0.3s; padding-top: 80px; border-right: 1px solid var(--border); }
-    .sidebar.open { left: 0; }
-    .menu-item { padding: 15px 25px; color: var(--text); cursor: pointer; display:flex; align-items:center; font-weight: 500; }
-    .menu-item i { margin-right: 15px; color: var(--primary); width: 20px; text-align: center; }
-    .menu-item:hover, .menu-item.active { background: rgba(229, 9, 20, 0.08); color: var(--primary); border-left: 4px solid var(--primary); }
-    
-    .main-content { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-    .section-card { background: var(--panel); padding: 35px; border-radius: 12px; border: 1px solid var(--border); display: none; }
-    .section-card.active { display: block; }
-    .section-card h3 { border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 25px; font-size: 22px; }
-    
-    .form-group { margin-bottom: 22px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #ccc; }
-    .form-control { width: 100%; padding: 12px 16px; background: #1a1a1f; border: 1px solid var(--border); border-radius: 8px; color: white; }
-    .btn-submit { background: var(--primary); color: white; padding: 14px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
-    
-    .search-container { position: relative; margin-bottom: 20px; }
-    .search-container input { padding-left: 45px; }
-    .search-container i { position: absolute; left: 18px; top: 15px; color: #777; }
-    
-    .scroll-list { max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: #0f0f11; }
-    .list-item { padding: 15px 20px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .delete-btn { background: #7c040a; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1001; justify-content: center; align-items: center; }
-    .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; width: 90%; max-width: 500px; padding: 35px; position: relative; }
-    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; }
+    :root{--bg:#0b0b0c;--panel:#121214;--primary:#e50914;--text:#ffffff;--border:#222226;}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;}
+    body{background:var(--bg);color:var(--text);overflow-x:hidden;}
+    #loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);display:flex;justify-content:center;align-items:center;z-index:10000;}
+    .login-box{background:var(--panel);padding:40px;border-radius:12px;width:90%;max-width:400px;text-align:center;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+    .login-box h2{color:var(--primary);margin-bottom:15px;}
+    .login-box label{display:block;text-align:left;margin-bottom:8px;font-size:14px;color:#ccc;font-weight:600;}
+    .login-box input{width:100%;padding:14px;margin-bottom:20px;background:#1c1c21;border:1px solid var(--border);color:white;border-radius:8px;font-size:15px;}
+    .login-box button{background:var(--primary);color:white;width:100%;padding:14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:16px;margin-top:10px;}
+    .header{background:var(--panel);padding:15px 25px;display:flex;align-items:center;border-bottom:1px solid var(--border);}
+    .menu-toggle{font-size:24px;cursor:pointer;margin-right:20px;color:var(--primary);}
+    .sidebar{position:fixed;left:-280px;top:0;height:100%;width:280px;background:var(--panel);z-index:999;transition:0.3s;padding-top:80px;border-right:1px solid var(--border);}
+    .sidebar.open{left:0;}
+    .menu-item{padding:15px 25px;color:var(--text);cursor:pointer;display:flex;align-items:center;font-weight:500;}
+    .menu-item i{margin-right:15px;color:var(--primary);width:20px;text-align:center;}
+    .menu-item:hover,.menu-item.active{background:rgba(229,9,20,0.08);color:var(--primary);border-left:4px solid var(--primary);}
+    .main-content{max-width:800px;margin:40px auto;padding:0 20px;}
+    .section-card{background:var(--panel);padding:35px;border-radius:12px;border:1px solid var(--border);display:none;}
+    .section-card.active{display:block;}
+    .section-card h3{border-bottom:2px solid var(--primary);padding-bottom:12px;margin-bottom:25px;font-size:22px;}
+    .form-group{margin-bottom:22px;}
+    .form-group label{display:block;margin-bottom:8px;font-weight:600;font-size:14px;color:#ccc;}
+    .form-control{width:100%;padding:12px 16px;background:#1a1a1f;border:1px solid var(--border);border-radius:8px;color:white;}
+    .btn-submit{background:var(--primary);color:white;padding:14px 25px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;width:100%;font-size:15px;}
+    .search-container{position:relative;margin-bottom:20px;}
+    .search-container input{padding-left:45px;}
+    .search-container i{position:absolute;left:18px;top:15px;color:#777;}
+    .scroll-list{max-height:350px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:#0f0f11;}
+    .list-item{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+    .delete-btn{background:#7c040a;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;}
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:1001;justify-content:center;align-items:center;}
+    .modal-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;width:90%;max-width:500px;padding:35px;position:relative;}
+    .close-modal{position:absolute;top:18px;right:18px;font-size:24px;cursor:pointer;color:#777;}
   </style>
 </head>
 <body>
 
-  <!-- SECURE LOGIN SCREEN -->
+  <!-- ADMIN LOGIN & FIRST TIME SETUP -->
   <div id="loginScreen">
     <div class="login-box">
       <h2>Asi Media Admin</h2>
-      <p>Paste your Supabase <b>Secret Key</b> to login securely. (Safe & Encrypted)</p>
-      <input type="password" id="adminPassInput" placeholder="sb_secret_XXXXXXXXX...">
-      <button onclick="attemptLogin()">Log In Securely</button>
+      
+      <!-- Ye box sirf First Time dikhega -->
+      <div id="secretKeyGroup" style="display: none; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #222;">
+        <label style="color: #ffd700;"><i class="fa-solid fa-key"></i> First Time Setup</label>
+        <p style="font-size: 12px; color: #a1a1aa; margin-bottom: 10px; text-align: left;">Apni Supabase Secret Key daalein (sb_secret_...). Ye sirf ek baar pucha jayega aur browser me safe rahega.</p>
+        <input type="password" id="secretKeyInput" placeholder="Paste Secret Key...">
+      </div>
+
+      <label>Admin Password</label>
+      <input type="password" id="adminPassInput" placeholder="Enter Password (default: admin123)">
+      <button onclick="attemptLogin()">Log In</button>
     </div>
   </div>
 
@@ -123,8 +123,7 @@
     <div id="linksSec" class="section-card">
       <h3>Site Settings</h3>
       <form id="settingsForm" onsubmit="submitSettings(event)">
-        <!-- Legacy Password field kept for database integrity -->
-        <div class="form-group"><label>App Password (Legacy)</label><input type="text" id="adminPassNew" class="form-control" required></div>
+        <div class="form-group"><label>Admin Password</label><input type="text" id="adminPassNew" class="form-control" required></div>
         <div class="form-group"><label>Telegram Channel Link</label><input type="url" id="chanLink" class="form-control"></div>
         <div class="form-group"><label>Telegram Group Link</label><input type="url" id="groupLink" class="form-control"></div>
         <div class="form-group"><label>Global Player Password</label><input type="text" id="playerPass" class="form-control" required></div>
@@ -148,34 +147,55 @@
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    // Dinamically create admin client based on Secret Key
     let supabaseAdmin = null;
 
-    async function attemptLogin(savedKey = null) {
-      const secretKey = savedKey || document.getElementById("adminPassInput").value.trim();
-      if (!secretKey) return alert("Please enter Secret Key");
+    // Check agar Secret Key pehle se saved hai ya nahi
+    let savedSecret = localStorage.getItem("asi_secret_key");
+    if (!savedSecret) {
+      document.getElementById("secretKeyGroup").style.display = "block";
+    }
 
-      // SUPABASE_URL comes from supabase-config.js
-      const tempClient = window.supabase.createClient(SUPABASE_URL, secretKey);
+    async function attemptLogin() {
+      const secret = savedSecret || document.getElementById("secretKeyInput").value.trim();
+      const pass = document.getElementById("adminPassInput").value.trim();
 
-      // Verifying if the key works
-      const { data, error } = await tempClient.from('settings').select('*').limit(1);
+      if (!secret || !pass) return alert("Please fill all details to login.");
 
-      if (!error && data) {
-        supabaseAdmin = tempClient;
-        localStorage.setItem("admin_secret_key", secretKey); // Saving in browser
-        document.getElementById("loginScreen").style.display = "none";
-        loadInitialData();
-      } else {
-        if (!savedKey) alert("Invalid Secret Key! Access Denied.");
-        localStorage.removeItem("admin_secret_key");
+      try {
+        // Init Admin Client locally
+        const tempClient = window.supabase.createClient(SUPABASE_URL, secret);
+
+        // Fetching exact password from database
+        const { data, error } = await tempClient.from('settings').select('admin_password').single();
+
+        if (error) {
+          alert("Invalid Secret Key! Database connect nahi ho raha.");
+          return;
+        }
+
+        // Checking Password Match
+        if (data && data.admin_password === pass) {
+          localStorage.setItem("asi_secret_key", secret);
+          localStorage.setItem("asi_admin_logged_in", "true");
+          supabaseAdmin = tempClient; // Admin Client Activated
+          
+          document.getElementById("loginScreen").style.display = "none";
+          loadInitialData();
+        } else {
+          alert("Incorrect Admin Password!");
+        }
+      } catch (err) {
+        alert("System Error: " + err.message);
       }
     }
 
-    // Auto-login if key is saved in LocalStorage
+    // Auto-Login Check
     window.onload = () => {
-      const saved = localStorage.getItem("admin_secret_key");
-      if(saved) attemptLogin(saved);
+      if (localStorage.getItem("asi_admin_logged_in") === "true" && savedSecret) {
+        supabaseAdmin = window.supabase.createClient(SUPABASE_URL, savedSecret);
+        document.getElementById("loginScreen").style.display = "none";
+        loadInitialData();
+      }
     };
 
     function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); }
@@ -215,7 +235,7 @@
       const { data } = await supabaseAdmin.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
       document.getElementById("selectionList").innerHTML = data.map(post => `
         <div class="list-item" onclick="openEpisodeModal('${post.id}', '${post.name.replace(/'/g, "\\'")}')">
-          <span>${post.name}</span> <i class="fa-solid fa-plus"></i>
+          <span>${post.name}</span> <i class="fa-solid fa-plus" style="color:var(--primary);"></i>
         </div>
       `).join("");
     }
@@ -223,8 +243,8 @@
     function openEpisodeModal(postId, postName) {
       document.getElementById("modalContent").innerHTML = `
         <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h3 style="margin-bottom: 20px; color: #e50914;">Add Episode</h3>
-        <p style="margin-bottom: 20px;">${postName}</p>
+        <h3 style="margin-bottom: 10px; color: #e50914;">Add Episode</h3>
+        <p style="margin-bottom: 20px; font-weight:bold;">${postName}</p>
         <form onsubmit="submitEpisode(event, '${postId}')">
           <div class="form-group"><label>Episode Number</label><input type="text" id="epLabel" class="form-control" required></div>
           <div class="form-group"><label>Original Download Link</label><input type="url" id="epLink" class="form-control" required></div>
@@ -235,12 +255,12 @@
       document.getElementById("modal").style.display = "flex";
     }
 
-    // Shortener Logic - Background Generation
+    // Shortener Logic - Automatic Link Generation
     async function generateShortLink(originalUrl) {
       const { data: shorteners } = await supabaseAdmin.from('shorteners').select('*');
       if (!shorteners || shorteners.length === 0) return originalUrl; 
       
-      const sh = shorteners[0]; // Picking the first shortener account
+      const sh = shorteners[0];
       try {
         const apiUrl = `${sh.dashboard_url}/api?api=${sh.api_key}&url=${encodeURIComponent(originalUrl)}`;
         const res = await fetch(apiUrl);
@@ -255,7 +275,7 @@
     async function submitEpisode(e, postId) {
       e.preventDefault();
       const btn = document.getElementById("epSubmitBtn");
-      btn.innerText = "Generating Link...";
+      btn.innerText = "Generating Shortlink & Saving...";
       btn.disabled = true;
 
       const epLabel = document.getElementById("epLabel").value.trim();
@@ -333,14 +353,14 @@
         group_link: document.getElementById("groupLink").value,
         player_password: document.getElementById("playerPass").value
       }).neq('id', 0); 
-      alert("Settings Updated!");
+      alert("Settings Successfully Updated!");
     }
 
     async function fetchPremiumUsers() {
       const { data } = await supabaseAdmin.from('premium_users').select('*');
       document.getElementById("premiumUsersList").innerHTML = data.map(u => `
         <div class="list-item">
-          <div>
+          <div style="text-align: left;">
             <strong>${u.email}</strong> 
             ${u.is_banned ? '<span style="color:red; font-size:12px; font-weight:bold;">(BANNED)</span>' : ''}
             <br><small style="color:#aaa;">Pass: ${u.password} | Expiry: ${new Date(u.expires_at).toLocaleDateString()}</small>
@@ -353,7 +373,7 @@
     async function submitPremium(e) {
       e.preventDefault();
       const expires = new Date();
-      expires.setDate(expires.getDate() + 28); // 28 Days Premium Expiry
+      expires.setDate(expires.getDate() + 28);
       await supabaseAdmin.from('premium_users').insert([{
         email: document.getElementById("premEmail").value.trim(),
         password: document.getElementById("premPass").value.trim(),
@@ -368,4 +388,4 @@
     function closeModal() { document.getElementById("modal").style.display = "none"; }
   </script>
 </body>
-                                  </html>
+</html>
