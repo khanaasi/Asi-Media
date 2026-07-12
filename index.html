@@ -1,11 +1,10 @@
-here<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Asi Media - Watch Free Anime Sub/Dub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
@@ -111,7 +110,6 @@ here<!DOCTYPE html>
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    // HARDCODED CONFIGURATION - NO IMPORT NEEDED
     const SUPABASE_URL = "https://kvdfdflygyssnldvahzv.supabase.co"; 
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_CrFqmZHxB__p9akDmKoaIQ_T0Lm9VnX"; 
     
@@ -127,7 +125,7 @@ here<!DOCTYPE html>
     }
 
     async function loadApp() {
-      const { data: setts } = await supabasePublic.from('settings').select('*').single();
+      const { data: setts } = await supabasePublic.from('settings').select('*').limit(1).single();
       if(setts) {
         settingsData = setts;
         document.getElementById("tgChannel").href = setts.channel_link || "#";
@@ -229,7 +227,7 @@ here<!DOCTYPE html>
         </div>
         <h3 style="border-bottom:1px solid #222; padding-bottom:10px;">EPISODE LIST</h3>
         <div class="episodes-grid">
-          ${episodes.map(ep => `
+          ${(episodes || []).map(ep => `
             <button onclick="handleEpisode('${ep.play_link}', '${ep.short_link}')">${ep.episode_label}</button>
           `).join("")}
         </div>
