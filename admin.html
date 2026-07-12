@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Asi Media - Admin Panel</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Supabase Core Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <style>
     :root{--bg:#0b0b0c;--panel:#121214;--primary:#e50914;--text:#ffffff;--border:#222226;}
     *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;}
@@ -18,7 +15,7 @@
     .login-box h2{color:var(--primary);margin-bottom:15px;}
     .login-box label{display:block;text-align:left;margin-bottom:8px;font-size:14px;color:#ccc;font-weight:600;}
     .login-box input{width:100%;padding:14px;margin-bottom:20px;background:#1c1c21;border:1px solid var(--border);color:white;border-radius:8px;font-size:15px;}
-    .login-box button{background:var(--primary);color:white;width:100%;padding:14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:16px;margin-top:10px;}
+    .login-box button{background:var(--primary);color:white;width:100%;padding:14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:16px;}
     .header{background:var(--panel);padding:15px 25px;display:flex;align-items:center;border-bottom:1px solid var(--border);}
     .menu-toggle{font-size:24px;cursor:pointer;margin-right:20px;color:var(--primary);}
     .sidebar{position:fixed;left:-280px;top:0;height:100%;width:280px;background:var(--panel);z-index:999;transition:0.3s;padding-top:80px;border-right:1px solid var(--border);}
@@ -52,15 +49,14 @@
     <div class="login-box">
       <h2>Asi Media Admin</h2>
       
-      <!-- Hidden by default, shows ONLY if Secret Key is not saved -->
       <div id="firstTimeSetup" style="display: none; text-align:left; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222;">
         <label style="color: #ffd700;"><i class="fa-solid fa-key"></i> First Time Setup</label>
-        <p style="font-size: 12px; color: #a1a1aa; margin-bottom: 10px;">Apni Supabase Secret Key daalein. Ye sirf 1 baar pucha jayega.</p>
+        <p style="font-size: 12px; color: #a1a1aa; margin-bottom: 10px;">Apni Supabase Secret Key (sb_secret_...) daalein. Ye GitHub par nahi jayegi, browser me safe rahegi.</p>
         <input type="password" id="secretKeyInput" placeholder="sb_secret_...">
       </div>
 
       <label>Admin Password</label>
-      <input type="password" id="adminPassInput" placeholder="Enter Password (admin123)">
+      <input type="password" id="adminPassInput" placeholder="Password daalein (Default: admin123)">
       <button onclick="attemptLogin()">Log In</button>
     </div>
   </div>
@@ -81,7 +77,6 @@
 
   <div class="main-content">
     
-    <!-- 01. ADD POST -->
     <div id="addPostSec" class="section-card active">
       <h3>Add New Post</h3>
       <form id="addPostForm" onsubmit="submitPost(event)">
@@ -96,21 +91,18 @@
       </form>
     </div>
 
-    <!-- 02. ADD EPISODE -->
     <div id="selectPostSec" class="section-card">
       <h3>Select Post to Add Episode</h3>
       <div class="search-container"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchPostInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForSelection()"></div>
       <div class="scroll-list" id="selectionList"></div>
     </div>
 
-    <!-- 03. DELETE POST -->
     <div id="deletePostSec" class="section-card">
       <h3>Delete Post</h3>
       <div class="search-container"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchDeleteInput" class="form-control" placeholder="Search Post Name..." oninput="fetchPostsForDeletion()"></div>
       <div class="scroll-list" id="deletionList"></div>
     </div>
 
-    <!-- 04. SHORTENERS -->
     <div id="shortenersSec" class="section-card">
       <h3>Shortener Accounts</h3>
       <div class="scroll-list" id="shortenerList" style="margin-bottom: 25px;"></div>
@@ -121,7 +113,6 @@
       </form>
     </div>
 
-    <!-- 05. SETTINGS -->
     <div id="linksSec" class="section-card">
       <h3>Site Settings</h3>
       <form id="settingsForm" onsubmit="submitSettings(event)">
@@ -133,7 +124,6 @@
       </form>
     </div>
 
-    <!-- 06. PREMIUM USERS -->
     <div id="premiumSec" class="section-card">
       <h3>Premium Users (28 Days)</h3>
       <div class="scroll-list" id="premiumUsersList" style="margin-bottom: 25px;"></div>
@@ -149,64 +139,49 @@
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    // ==========================================
-    // DEEP ANNELISE FIX: HARDCODED CONFIGURATION
-    // Replace YOUR_NEW_URL_HERE with your new Supabase Project URL.
-    // ==========================================
-    const SUPABASE_URL = "https://YOUR_NEW_URL_HERE.supabase.co"; // <--- UPDATE THIS
+    // HARDCODED SUPABASE URL - NEVER FAILS NOW
+    const SUPABASE_URL = "https://kvdfdflygyssnldvahzv.supabase.co";
     
     let supabaseAdmin = null;
     let savedSecret = localStorage.getItem("asi_secret_key");
 
-    // UI Logic: Show secret key input only if not saved
     if (!savedSecret) {
       document.getElementById("firstTimeSetup").style.display = "block";
     }
 
-    // LINE-BY-LINE FIX: The Login Logic
     async function attemptLogin() {
-      // 1. Get Secret Key (from memory OR from input box)
       const secretToUse = savedSecret || document.getElementById("secretKeyInput").value.trim();
-      // 2. Get Password from input box
       const passInput = document.getElementById("adminPassInput").value.trim();
 
       if (!secretToUse || !passInput) {
-        return alert("Error: Password aur Secret key dono daalna zaroori hai.");
+        return alert("Error: Secret key aur Password dono zaroori hain.");
       }
 
       try {
-        // 3. Create Admin Client
         const tempClient = window.supabase.createClient(SUPABASE_URL, secretToUse);
-
-        // 4. Test Connection and fetch password from DB
         const { data, error } = await tempClient.from('settings').select('admin_password').single();
 
-        // 5. Deep Bug Catch: If RLS fails or Key is wrong
         if (error) {
-          console.error(error);
-          alert("Connection Failed!\nReason: " + error.message + "\nCheck if Secret Key and URL are correct.");
+          alert("Connection Failed! Invalid Secret Key ya phir Table exist nahi karti.");
           localStorage.removeItem("asi_secret_key");
           return;
         }
 
-        // 6. Verify Password Match
         if (data && data.admin_password === passInput) {
-          // Success! Save secret key safely in browser ONLY.
           localStorage.setItem("asi_secret_key", secretToUse);
           localStorage.setItem("asi_admin_logged_in", "true");
           
-          supabaseAdmin = tempClient; // Activate Admin Access
+          supabaseAdmin = tempClient;
           document.getElementById("loginScreen").style.display = "none";
           loadInitialData();
         } else {
           alert("Incorrect Admin Password!");
         }
       } catch (err) {
-        alert("System Exception: " + err.message);
+        alert("System Error: " + err.message);
       }
     }
 
-    // Auto Login Check
     window.onload = () => {
       if (localStorage.getItem("asi_admin_logged_in") === "true" && savedSecret) {
         supabaseAdmin = window.supabase.createClient(SUPABASE_URL, savedSecret);
@@ -224,11 +199,7 @@
     }
 
     function loadInitialData() {
-      fetchPostsForSelection();
-      fetchPostsForDeletion();
-      fetchShorteners();
-      fetchSettings();
-      fetchPremiumUsers();
+      fetchPostsForSelection(); fetchPostsForDeletion(); fetchShorteners(); fetchSettings(); fetchPremiumUsers();
     }
 
     async function submitPost(e) {
@@ -272,16 +243,40 @@
       document.getElementById("modal").style.display = "flex";
     }
 
+    // ==============================================================
+    // ADVANCED PYTHON-TO-JS SHORTENER LOGIC (WITH AUTO-URL FIXER)
+    // ==============================================================
     async function generateShortLink(originalUrl) {
       const { data: shorteners } = await supabaseAdmin.from('shorteners').select('*');
       if (!shorteners || shorteners.length === 0) return originalUrl; 
+      
       const sh = shorteners[0];
+      let apiUrl = sh.dashboard_url.trim();
+
+      // AUTO FIX URL (Converts domain.com/member/dashboard to domain.com/api)
       try {
-        const apiUrl = `${sh.dashboard_url}/api?api=${sh.api_key}&url=${encodeURIComponent(originalUrl)}`;
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        if (data.status === 'success' || data.shortenedUrl) return data.shortenedUrl; 
+         const urlObj = new URL(apiUrl);
+         if (!apiUrl.endsWith('/api')) {
+             apiUrl = `${urlObj.protocol}//${urlObj.host}/api`;
+         }
+      } catch(e) {}
+
+      try {
+        const finalApi = `${apiUrl}?api=${sh.api_key}&url=${encodeURIComponent(originalUrl)}`;
+        const res = await fetch(finalApi);
+        const text = await res.text();
+        
+        try {
+          const data = JSON.parse(text);
+          if (data.status === 'success' || data.shortenedUrl) {
+             return data.shortenedUrl || data.short_url || data.link; 
+          }
+        } catch(err) {
+          // Fallback if API returns plain text instead of JSON
+          if (text.trim().startsWith("http")) return text.trim();
+        }
       } catch(e) { console.error("Shortener API error", e); }
+      
       return originalUrl;
     }
 
