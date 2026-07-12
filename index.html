@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Asi Media - Watch Free Anime Sub/Dub</title>
+  <title>AnimeSubStudio - Watch Free Anime</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
@@ -75,13 +76,13 @@
 <body>
 
   <div class="header">
-    <span class="logo" onclick="showHome()">Asi Media</span>
+    <span class="logo" onclick="showHome()">AnimeSubStudio</span>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search by name..." oninput="searchPosts()">
+      <input type="text" id="searchInput" placeholder="Search anime..." oninput="searchPosts()">
       <i class="fa-solid fa-magnifying-glass"></i>
     </div>
     <div class="header-right">
-      <button class="nav-btn" onclick="openPremiumLoginModal()"><i class="fa-solid fa-gem" style="color:#ffd700;"></i> Premium</button>
+      <button class="nav-btn" onclick="openPremiumLoginModal()"><i class="fa-solid fa-gem" style="color:#ffd700;"></i> Premium Login</button>
       <span class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></span>
     </div>
   </div>
@@ -110,7 +111,7 @@
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    const SUPABASE_URL = "https://kvdfdflygyssnldvahzv.supabase.co"; 
+    const SUPABASE_URL = "https://iabfgrtzznzaojceqrkv.supabase.co"; 
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_CrFqmZHxB__p9akDmKoaIQ_T0Lm9VnX"; 
     
     const supabasePublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -118,14 +119,10 @@
     let allPosts = [];
     let settingsData = {};
 
-    function generateUUID() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0; return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-      });
-    }
+    function generateUUID() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { let r = Math.random() * 16 | 0; return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16); }); }
 
     async function loadApp() {
-      const { data: setts } = await supabasePublic.from('settings').select('*').limit(1).single();
+      const { data: setts } = await supabasePublic.from('settings').select('*').single();
       if(setts) {
         settingsData = setts;
         document.getElementById("tgChannel").href = setts.channel_link || "#";
@@ -133,18 +130,12 @@
       }
 
       const { data: posts } = await supabasePublic.from('posts').select('*').order('created_at', { ascending: false });
-      if(posts) {
-        allPosts = posts;
-        renderPosts(allPosts);
-      }
+      if(posts) { allPosts = posts; renderPosts(allPosts); }
     }
 
     function renderPosts(posts) {
       const grid = document.getElementById("postsGrid");
-      if (posts.length === 0) {
-        grid.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:100px 0; color:#777;'>No content found.</div>";
-        return;
-      }
+      if (posts.length === 0) { grid.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:100px 0; color:#777;'>No content found.</div>"; return; }
       grid.innerHTML = posts.map(p => `
         <div class="post-card" onclick="showDetail('${p.id}')">
           <img src="${p.image_url}" alt="${p.name}">
@@ -159,16 +150,9 @@
       renderPosts(allPosts.filter(p => p.name.toLowerCase().includes(term)));
     }
 
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("open");
-      document.getElementById("overlay").classList.toggle("show");
-    }
+    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
 
-    function showAllPosts() {
-      toggleSidebar();
-      document.getElementById("gridTitle").innerHTML = "All <span>Anime Series</span>";
-      renderPosts(allPosts);
-    }
+    function showAllPosts() { toggleSidebar(); document.getElementById("gridTitle").innerHTML = "All <span>Anime Series</span>"; renderPosts(allPosts); }
 
     function showSidebarSection(type) {
       toggleSidebar();
@@ -227,8 +211,8 @@
         </div>
         <h3 style="border-bottom:1px solid #222; padding-bottom:10px;">EPISODE LIST</h3>
         <div class="episodes-grid">
-          ${(episodes || []).map(ep => `
-            <button onclick="handleEpisode('${ep.play_link}', '${ep.short_link}')">${ep.episode_label}</button>
+          ${episodes.map(ep => `
+            <button onclick="handleEpisode('${ep.play_link}', '${ep.short_link}', '${ep.original_link}')">${ep.episode_label}</button>
           `).join("")}
         </div>
       `;
@@ -240,13 +224,31 @@
       document.getElementById("detailPage").classList.remove("active");
     }
 
-    function handleEpisode(playLink, shortLink) {
+    function handleEpisode(playLink, shortLink, originalLink) {
       showModal(`
         <span class="close-modal" onclick="closeModal()">&times;</span>
         <h3>Choose Option</h3>
-        <button onclick="window.open('${shortLink}', '_blank')"><i class="fa-solid fa-download"></i> Download / Bypass Ads</button>
+        <button onclick="openDownloadLink('${shortLink}', '${originalLink}')"><i class="fa-solid fa-download"></i> Download Episode</button>
         <button onclick="playVideo('${playLink}')" style="background:#00b359;"><i class="fa-solid fa-play"></i> Stream Video (Requires Password)</button>
       `);
+    }
+
+    // THIS FUNCTION HIDES THE ORIGINAL LINK FROM FREE USERS
+    async function openDownloadLink(shortLink, originalLink) {
+      const userEmail = localStorage.getItem('premium_email');
+      const localDevice = localStorage.getItem('device_id');
+
+      if (userEmail && localDevice) {
+        const { data } = await supabasePublic.from('premium_users').select('*').eq('email', userEmail).single();
+        if (data && !data.is_banned && data.device_id === localDevice) {
+           window.open(originalLink, '_blank'); // PREMIUM USER GETS ORIGINAL LINK directly
+           closeModal();
+           return;
+        } 
+      }
+      
+      window.open(shortLink, '_blank'); // FREE USER GETS SHORT LINK
+      closeModal();
     }
 
     async function playVideo(playLink) {
@@ -268,11 +270,8 @@
       }
 
       const pass = prompt("Enter Global Streaming Password:");
-      if (pass === settingsData.player_password) {
-        window.open(playLink, '_blank');
-      } else if (pass) {
-        alert("Incorrect Password!");
-      }
+      if (pass === settingsData.player_password) { window.open(playLink, '_blank'); } 
+      else if (pass) { alert("Incorrect Password!"); }
       closeModal();
     }
 
@@ -316,7 +315,7 @@
 
       await supabasePublic.from('premium_users').update({ device_id: currentDevice }).eq('id', data.id);
       localStorage.setItem('premium_email', email);
-      alert("Login Successful! You can watch Streams directly.");
+      alert("Login Successful! You can watch Streams and Bypassed Links directly.");
       closeModal();
     }
 
