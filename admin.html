@@ -15,7 +15,8 @@
     .login-box h2{color:var(--primary);margin-bottom:15px;}
     .login-box label{display:block;text-align:left;margin-bottom:8px;font-size:14px;color:#ccc;font-weight:600;}
     .login-box input{width:100%;padding:14px;margin-bottom:20px;background:#1c1c21;border:1px solid var(--border);color:white;border-radius:8px;font-size:15px;}
-    .login-box button{background:var(--primary);color:white;width:100%;padding:14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:16px;}
+    .login-box button{background:var(--primary);color:white;width:100%;padding:14px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-size:16px; margin-bottom: 10px;}
+    .reset-btn {background: #333 !important;}
     .header{background:var(--panel);padding:15px 25px;display:flex;align-items:center;border-bottom:1px solid var(--border);}
     .menu-toggle{font-size:24px;cursor:pointer;margin-right:20px;color:var(--primary);}
     .sidebar{position:fixed;left:-280px;top:0;height:100%;width:280px;background:var(--panel);z-index:999;transition:0.3s;padding-top:80px;border-right:1px solid var(--border);}
@@ -50,14 +51,20 @@
       <h2>Asi Media Admin</h2>
       
       <div id="firstTimeSetup" style="display: none; text-align:left; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222;">
-        <label style="color: #ffd700;"><i class="fa-solid fa-key"></i> First Time Setup</label>
-        <p style="font-size: 12px; color: #a1a1aa; margin-bottom: 10px;">Apni Supabase Secret Key (sb_secret_...) daalein. Ye GitHub par nahi jayegi, browser me safe rahegi.</p>
-        <input type="password" id="secretKeyInput" placeholder="sb_secret_...">
+        <label style="color: #ffd700;"><i class="fa-solid fa-database"></i> Database Setup</label>
+        <p style="font-size: 12px; color: #a1a1aa; margin-bottom: 10px;">Apna Supabase Project URL aur Secret Key daalein. Ye change ki ja sakti hai baad me.</p>
+        
+        <label>Supabase Project URL</label>
+        <input type="url" id="urlInput" placeholder="https://xxx.supabase.co" value="https://kvdfdflygyssnldvahzv.supabase.co">
+
+        <label>Secret Key (service_role)</label>
+        <input type="password" id="secretKeyInput" placeholder="eyJhb...">
       </div>
 
       <label>Admin Password</label>
       <input type="password" id="adminPassInput" placeholder="Password daalein (Default: admin123)">
       <button onclick="attemptLogin()">Log In</button>
+      <button class="reset-btn" onclick="resetDatabase()" style="display: none;" id="resetBtn">Change Database</button>
     </div>
   </div>
 
@@ -73,6 +80,7 @@
     <div class="menu-item" onclick="switchSection('shortenersSec')"><i class="fa-solid fa-link"></i> Shorteners (04)</div>
     <div class="menu-item" onclick="switchSection('linksSec')"><i class="fa-solid fa-gear"></i> Settings (05)</div>
     <div class="menu-item" onclick="switchSection('premiumSec')"><i class="fa-solid fa-user-shield"></i> Premium Users (06)</div>
+    <div class="menu-item" onclick="resetDatabase()"><i class="fa-solid fa-right-from-bracket"></i> Logout / Change DB</div>
   </div>
 
   <div class="main-content">
@@ -139,35 +147,45 @@
   <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
 
   <script>
-    // HARDCODED SUPABASE URL - NEVER FAILS NOW
-    const SUPABASE_URL = "https://kvdfdflygyssnldvahzv.supabase.co";
-    
     let supabaseAdmin = null;
+    let savedUrl = localStorage.getItem("asi_supabase_url");
     let savedSecret = localStorage.getItem("asi_secret_key");
 
-    if (!savedSecret) {
+    if (!savedSecret || !savedUrl) {
       document.getElementById("firstTimeSetup").style.display = "block";
+    } else {
+      document.getElementById("resetBtn").style.display = "block";
+    }
+
+    function resetDatabase() {
+      localStorage.removeItem("asi_supabase_url");
+      localStorage.removeItem("asi_secret_key");
+      localStorage.removeItem("asi_admin_logged_in");
+      location.reload();
     }
 
     async function attemptLogin() {
+      const urlToUse = savedUrl || document.getElementById("urlInput").value.trim();
       const secretToUse = savedSecret || document.getElementById("secretKeyInput").value.trim();
       const passInput = document.getElementById("adminPassInput").value.trim();
 
-      if (!secretToUse || !passInput) {
-        return alert("Error: Secret key aur Password dono zaroori hain.");
+      if (!urlToUse || !secretToUse || !passInput) {
+        return alert("Error: URL, Secret Key aur Password zaroori hain.");
       }
 
       try {
-        const tempClient = window.supabase.createClient(SUPABASE_URL, secretToUse);
-        const { data, error } = await tempClient.from('settings').select('admin_password').single();
+        const tempClient = window.supabase.createClient(urlToUse, secretToUse);
+        const { data, error } = await tempClient.from('settings').select('admin_password').limit(1).single();
 
         if (error) {
-          alert("Connection Failed! Invalid Secret Key ya phir Table exist nahi karti.");
-          localStorage.removeItem("asi_secret_key");
+          console.error(error);
+          alert("Connection Failed! Ya toh credentials galat hain, ya table empty/missing hai.");
+          resetDatabase();
           return;
         }
 
         if (data && data.admin_password === passInput) {
+          localStorage.setItem("asi_supabase_url", urlToUse);
           localStorage.setItem("asi_secret_key", secretToUse);
           localStorage.setItem("asi_admin_logged_in", "true");
           
@@ -183,8 +201,8 @@
     }
 
     window.onload = () => {
-      if (localStorage.getItem("asi_admin_logged_in") === "true" && savedSecret) {
-        supabaseAdmin = window.supabase.createClient(SUPABASE_URL, savedSecret);
+      if (localStorage.getItem("asi_admin_logged_in") === "true" && savedSecret && savedUrl) {
+        supabaseAdmin = window.supabase.createClient(savedUrl, savedSecret);
         document.getElementById("loginScreen").style.display = "none";
         loadInitialData();
       }
@@ -221,11 +239,13 @@
     async function fetchPostsForSelection() {
       const val = document.getElementById("searchPostInput").value;
       const { data } = await supabaseAdmin.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
-      document.getElementById("selectionList").innerHTML = data.map(post => `
-        <div class="list-item" onclick="openEpisodeModal('${post.id}', '${post.name.replace(/'/g, "\\'")}')">
-          <span>${post.name}</span> <i class="fa-solid fa-plus" style="color:var(--primary);"></i>
-        </div>
-      `).join("");
+      if(data) {
+        document.getElementById("selectionList").innerHTML = data.map(post => `
+          <div class="list-item" onclick="openEpisodeModal('${post.id}', '${post.name.replace(/'/g, "\\'")}')">
+            <span>${post.name}</span> <i class="fa-solid fa-plus" style="color:var(--primary);"></i>
+          </div>
+        `).join("");
+      }
     }
 
     function openEpisodeModal(postId, postName) {
@@ -243,9 +263,6 @@
       document.getElementById("modal").style.display = "flex";
     }
 
-    // ==============================================================
-    // ADVANCED PYTHON-TO-JS SHORTENER LOGIC (WITH AUTO-URL FIXER)
-    // ==============================================================
     async function generateShortLink(originalUrl) {
       const { data: shorteners } = await supabaseAdmin.from('shorteners').select('*');
       if (!shorteners || shorteners.length === 0) return originalUrl; 
@@ -253,7 +270,6 @@
       const sh = shorteners[0];
       let apiUrl = sh.dashboard_url.trim();
 
-      // AUTO FIX URL (Converts domain.com/member/dashboard to domain.com/api)
       try {
          const urlObj = new URL(apiUrl);
          if (!apiUrl.endsWith('/api')) {
@@ -272,7 +288,6 @@
              return data.shortenedUrl || data.short_url || data.link; 
           }
         } catch(err) {
-          // Fallback if API returns plain text instead of JSON
           if (text.trim().startsWith("http")) return text.trim();
         }
       } catch(e) { console.error("Shortener API error", e); }
@@ -303,12 +318,14 @@
     async function fetchPostsForDeletion() {
       const val = document.getElementById("searchDeleteInput").value;
       const { data } = await supabaseAdmin.from('posts').select('*').ilike('name', `%${val}%`).order('created_at', {ascending: false});
-      document.getElementById("deletionList").innerHTML = data.map(post => `
-        <div class="list-item">
-          <span>${post.name}</span>
-          <button class="delete-btn" onclick="deletePost('${post.id}')">Delete</button>
-        </div>
-      `).join("");
+      if(data) {
+        document.getElementById("deletionList").innerHTML = data.map(post => `
+          <div class="list-item">
+            <span>${post.name}</span>
+            <button class="delete-btn" onclick="deletePost('${post.id}')">Delete</button>
+          </div>
+        `).join("");
+      }
     }
 
     async function deletePost(id) {
@@ -320,12 +337,14 @@
 
     async function fetchShorteners() {
       const { data } = await supabaseAdmin.from('shorteners').select('*');
-      document.getElementById("shortenerList").innerHTML = data.map(sh => `
-        <div class="list-item">
-          <div>${sh.dashboard_url}</div>
-          <button class="delete-btn" onclick="deleteShortener('${sh.id}')">Delete</button>
-        </div>
-      `).join("");
+      if(data) {
+        document.getElementById("shortenerList").innerHTML = data.map(sh => `
+          <div class="list-item">
+            <div>${sh.dashboard_url}</div>
+            <button class="delete-btn" onclick="deleteShortener('${sh.id}')">Delete</button>
+          </div>
+        `).join("");
+      }
     }
     
     async function submitShortener(e) {
@@ -336,7 +355,7 @@
     async function deleteShortener(id) { await supabaseAdmin.from('shorteners').delete().eq('id', id); fetchShorteners(); }
 
     async function fetchSettings() {
-      const { data } = await supabaseAdmin.from('settings').select('*').single();
+      const { data } = await supabaseAdmin.from('settings').select('*').limit(1).single();
       if(data) {
         document.getElementById("adminPassNew").value = data.admin_password || '';
         document.getElementById("chanLink").value = data.channel_link || '';
@@ -347,27 +366,32 @@
     
     async function submitSettings(e) {
       e.preventDefault();
-      await supabaseAdmin.from('settings').update({
-        admin_password: document.getElementById("adminPassNew").value,
-        channel_link: document.getElementById("chanLink").value,
-        group_link: document.getElementById("groupLink").value,
-        player_password: document.getElementById("playerPass").value
-      }).neq('id', 0); 
-      alert("Settings Successfully Updated!");
+      const { data: firstRow } = await supabaseAdmin.from('settings').select('id').limit(1).single();
+      if(firstRow) {
+        await supabaseAdmin.from('settings').update({
+          admin_password: document.getElementById("adminPassNew").value,
+          channel_link: document.getElementById("chanLink").value,
+          group_link: document.getElementById("groupLink").value,
+          player_password: document.getElementById("playerPass").value
+        }).eq('id', firstRow.id); 
+        alert("Settings Successfully Updated!");
+      }
     }
 
     async function fetchPremiumUsers() {
       const { data } = await supabaseAdmin.from('premium_users').select('*');
-      document.getElementById("premiumUsersList").innerHTML = data.map(u => `
-        <div class="list-item">
-          <div style="text-align: left;">
-            <strong>${u.email}</strong> 
-            ${u.is_banned ? '<span style="color:red; font-size:12px; font-weight:bold;">(BANNED)</span>' : ''}
-            <br><small style="color:#aaa;">Pass: ${u.password} | Expiry: ${new Date(u.expires_at).toLocaleDateString()}</small>
+      if(data) {
+        document.getElementById("premiumUsersList").innerHTML = data.map(u => `
+          <div class="list-item">
+            <div style="text-align: left;">
+              <strong>${u.email}</strong> 
+              ${u.is_banned ? '<span style="color:red; font-size:12px; font-weight:bold;">(BANNED)</span>' : ''}
+              <br><small style="color:#aaa;">Pass: ${u.password} | Expiry: ${new Date(u.expires_at).toLocaleDateString()}</small>
+            </div>
+            <button class="delete-btn" onclick="deletePremium('${u.id}')">Delete</button>
           </div>
-          <button class="delete-btn" onclick="deletePremium('${u.id}')">Delete</button>
-        </div>
-      `).join("");
+        `).join("");
+      }
     }
 
     async function submitPremium(e) {
