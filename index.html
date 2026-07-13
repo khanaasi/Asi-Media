@@ -1,88 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AnimeSubStudio - Watch Free Anime</title>
+  <title>Watch Anime Online</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <style>
-    :root { --bg: #09090b; --header: rgba(18, 18, 22, 0.9); --card-bg: rgba(22, 22, 26, 0.6); --primary: #e50914; --text: #ffffff; --text-muted: #a1a1aa; --border: rgba(255, 255, 255, 0.08); }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+    :root { 
+      --bg: #09090b; 
+      --header: rgba(18, 18, 22, 0.9); 
+      --card-bg: rgba(22, 22, 26, 0.6);
+      --primary: #e50914; 
+      --primary-glow: rgba(229, 9, 20, 0.35);
+      --text: #ffffff; 
+      --text-muted: #a1a1aa;
+      --border: rgba(255, 255, 255, 0.08); 
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
     body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
-    ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #0c0c0e; } ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     
-    .header { background: var(--header); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
-    .header .logo { font-size: 24px; font-weight: 900; color: var(--primary); cursor: pointer; text-transform: uppercase; }
+    .header { 
+      background: var(--header); 
+      padding: 15px 30px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+      border-bottom: 1px solid var(--border); 
+      backdrop-filter: blur(12px); 
+    }
+    .header .logo { 
+      font-size: 22px; 
+      font-weight: 900; 
+      color: var(--primary); 
+      cursor: pointer; 
+      text-transform: uppercase; 
+      letter-spacing: 1.5px; 
+    }
     .search-bar { flex: 1; margin: 0 40px; max-width: 500px; position: relative; }
-    .search-bar input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid var(--border); border-radius: 30px; background: rgba(30, 30, 35, 0.6); color: white; outline: none; }
+    .search-bar input { 
+      width: 100%; 
+      padding: 12px 20px 12px 45px; 
+      border: 1px solid var(--border); 
+      border-radius: 30px; 
+      background: rgba(30, 30, 35, 0.6); 
+      color: white; 
+      font-size: 14px; 
+    }
     .search-bar i { position: absolute; left: 18px; top: 15px; color: #a1a1aa; }
     .header-right { display: flex; align-items: center; gap: 15px; }
-    .nav-btn { background: none; border: 1px solid var(--border); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
     
-    .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); transition: 0.2s; margin-left: 10px; }
-    .menu-btn:hover { transform: scale(1.1); }
-    .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: right 0.3s ease; z-index: 1000; overflow-y: auto; border-left: 1px solid var(--border); backdrop-filter: blur(20px); }
+    .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary); }
+
+    .sidebar { position: fixed; right: -280px; top: 0; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.98); padding: 30px 20px; transition: 0.3s; z-index: 1000; overflow-y: auto; border-left: 1px solid var(--border); }
     .sidebar.open { right: 0; }
-    .sidebar h3 { font-size: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; }
-    .sidebar a { display: flex; align-items: center; gap: 12px; color: white; padding: 12px 15px; text-decoration: none; margin: 8px 0; border-radius: 8px; font-size: 15px; font-weight: bold; transition: 0.2s; }
-    .sidebar a:hover { background: rgba(229, 9, 20, 0.1); color: var(--primary); padding-left: 20px; }
-    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; backdrop-filter: blur(4px); }
+    .sidebar h3 { font-size: 20px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; font-weight: 800; }
+    .sidebar a { display: flex; align-items: center; gap: 12px; color: white; padding: 12px 15px; text-decoration: none; margin: 8px 0; border-radius: 8px; font-weight: bold; }
+    .sidebar a:hover { background: rgba(229, 9, 20, 0.1); color: var(--primary); }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; }
     .overlay.show { display: block; }
-    
-    .section-title { padding: 40px 30px 10px 30px; font-size: 26px; text-transform: uppercase; color: #fff; font-weight: 800; }
+
+    .section-title { padding: 40px 30px 10px 30px; font-size: 26px; text-transform: uppercase; font-weight: 800; }
     .section-title span { color: var(--primary); }
+    
     .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; padding: 20px 30px; }
-    .post-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; position:relative; }
-    .post-card:hover { transform: translateY(-8px); border-color: var(--primary); }
+    
+    .post-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
+    .post-card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 10px 25px var(--primary-glow); }
     .post-card img { width: 100%; height: 260px; object-fit: cover; }
-    .post-card .category-tag { position: absolute; top: 10px; right: 10px; background: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; }
-    .post-card .name { padding: 15px; font-size: 14px; text-align: center; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    /* Fallback Animated Colorful Box System */
+    .fallback-box {
+      width: 100%;
+      height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(-45deg, #e50914, #121214, #0088cc, #222226);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
+      border-bottom: 1px solid var(--border);
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .fallback-box .cat { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #ffd700; margin-bottom: 12px; font-weight: bold; }
+    .fallback-box .name-style { font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+    .post-card .category-tag { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+    .post-card .title-text { padding: 15px; font-size: 14px; text-align: center; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     .detail-page { display: none; padding: 40px 30px; max-width: 1100px; margin: 40px auto; background: rgba(22, 22, 26, 0.8); border-radius: 16px; border: 1px solid var(--border); }
     .detail-page.active { display: block; }
+    .back-btn { background: none; color: var(--primary); border: 1px solid var(--border); padding: 8px 18px; border-radius: 20px; font-size: 14px; cursor: pointer; margin-bottom: 30px; font-weight: bold; }
+    
     .detail-header { display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 40px; }
     .detail-header img { width: 260px; border-radius: 12px; }
-    .detail-info { flex: 1; min-width: 300px; }
-    .detail-info h2 { font-size: 38px; color: var(--primary); font-weight: 900; margin-bottom: 10px; }
-    .detail-info p { margin-bottom: 14px; color: var(--text-muted); }
     
-    .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-top: 20px;}
-    .episodes-grid button { background: #1f1f23; color: white; border: 1px solid var(--border); padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .episodes-grid button:hover { background: var(--primary); border-color: var(--primary); transform: translateY(-3px); }
+    .detail-info { flex: 1; min-width: 300px; }
+    .detail-info h2 { font-size: 34px; margin-bottom: 20px; color: var(--primary); font-weight: 900; }
+    .detail-info p { margin-bottom: 14px; font-size: 15px; line-height: 1.7; color: var(--text-muted); }
+    .detail-info p strong { color: white; }
+    
+    .episodes { margin-top: 40px; background: rgba(15, 15, 20, 0.6); padding: 30px; border-radius: 12px; border: 1px solid var(--border); }
+    .episodes h3 { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 25px; }
+    .episodes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+    .episodes button { background: #1f1f23; color: white; border: 1px solid var(--border); padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .episodes button:hover { background: var(--primary); border-color: var(--primary); transform: translateY(-3px); }
 
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
     .modal.active { display: flex; }
     .modal-box { background: #121214; border: 1px solid var(--border); padding: 40px; border-radius: 16px; text-align: center; width: 100%; max-width: 440px; position: relative; }
-    .modal-box h3 { color: var(--primary); margin-bottom: 15px; }
-    .modal-box input { width: 100%; padding: 14px; margin-bottom: 15px; background: #1a1a1f; border: 1px solid var(--border); color: white; border-radius: 8px; }
-    .modal-box button { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; margin: 8px 0; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; }
-    .modal-box button:hover { background: #b8070e; }
-    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; transition: 0.2s; }
-    .close-modal:hover { color: white; }
+    .modal-box h3 { margin-bottom: 15px; color: var(--primary); font-size: 24px; font-weight: 800; }
+    .modal-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+    .modal-box input { width: 100%; padding: 14px; margin-bottom: 15px; background: #1a1a1f; border: 1px solid var(--border); color: white; border-radius: 8px; text-align: center; }
+    .modal-box button { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; margin: 8px 0; cursor: pointer; font-weight: bold; width: 100%; }
+    .close-modal { position: absolute; top: 18px; right: 18px; font-size: 24px; cursor: pointer; color: #777; }
 
     @media (max-width: 768px) {
       .header { padding: 12px 15px; flex-wrap: wrap; gap: 12px; }
-      .search-bar { order: 3; max-width: 100%; flex: 1 1 100%; margin: 0; }
-      .posts-grid { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); padding: 15px; }
-      .post-card img { height: 190px; }
-      .detail-header img { width: 180px; }
+      .search-bar { order: 3; margin: 0; width: 100%; flex: 1 1 100%; }
+      .posts-grid { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 15px; padding: 15px; }
+      .post-card img, .fallback-box { height: 190px; }
     }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <span class="logo" onclick="showHome()">AnimeSubStudio</span>
+    <span class="logo" onclick="showHome()">AnimeStudio</span>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search anime..." oninput="searchPosts()">
+      <input type="text" id="searchInput" placeholder="Search by name or genre..." oninput="searchPosts()">
       <i class="fa-solid fa-magnifying-glass"></i>
     </div>
     <div class="header-right">
-      <button class="nav-btn" onclick="openPremiumLoginModal()"><i class="fa-solid fa-gem" style="color:#ffd700;"></i> Premium Login</button>
       <span class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></span>
     </div>
   </div>
@@ -90,10 +148,11 @@
   <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
   <div class="sidebar" id="sidebar">
     <h3>Filters Menu</h3>
-    <a href="#" onclick="showAllPosts()"><i class="fa-solid fa-house"></i> All Posts</a>
+    <a href="#" onclick="showAllPosts()"><i class="fa-solid fa-house"></i> All Anime</a>
     <a href="#" onclick="showSidebarSection('category')"><i class="fa-solid fa-layer-group"></i> Categories</a>
     <a href="#" onclick="showSidebarSection('genre')"><i class="fa-solid fa-masks-theater"></i> Genres</a>
     <a href="#" onclick="showSidebarSection('az')"><i class="fa-solid fa-arrow-down-a-z"></i> A2Z List</a>
+    <a href="#" onclick="openPaidRequestPrompt()"><i class="fa-solid fa-key" style="color:#ffd700;"></i> Paid Unlock</a>
     <a href="#" id="tgChannel" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Channel</a>
     <a href="#" id="tgGroup" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram Group</a>
   </div>
@@ -103,224 +162,308 @@
     <div id="postsGrid" class="posts-grid"></div>
     
     <div id="detailPage" class="detail-page">
-      <button class="nav-btn" onclick="showHome()" style="margin-bottom: 20px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="back-btn" onclick="showHome()"><i class="fa-solid fa-arrow-left"></i> Back</button>
       <div id="detailContent"></div>
     </div>
   </div>
 
-  <div class="modal" id="modal"><div class="modal-box" id="modalContent"></div></div>
+  <div class="modal" id="modal">
+    <div class="modal-box" id="modalContent"></div>
+  </div>
 
   <script>
-    const SUPABASE_URL = "https://iabfgrtzznzaojceqrkv.supabase.co"; 
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_CrFqmZHxB__p9akDmKoaIQ_T0Lm9VnX"; 
-    
-    const supabasePublic = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    // आपका Google Web App URL यहाँ जुड़ चुका है
+    const DATABASE_URL = "https://script.google.com/macros/s/AKfycbxD6Cngagch5RzIReniAl9zNPh37wPQiO_iAQQOBSW72SvYAkdcCFOWd-8KkZ8I95S8Ww/exec";
 
     let allPosts = [];
-    let settingsData = {};
-
-    function generateUUID() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { let r = Math.random() * 16 | 0; return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16); }); }
+    let settings = {};
 
     async function loadApp() {
-      const { data: setts } = await supabasePublic.from('settings').select('*').single();
-      if(setts) {
-        settingsData = setts;
-        document.getElementById("tgChannel").href = setts.channel_link || "#";
-        document.getElementById("tgGroup").href = setts.group_link || "#";
+      try {
+        const res = await fetch(DATABASE_URL + "?action=getPosts");
+        allPosts = await res.json();
+        renderPosts(allPosts);
+      } catch(e) {
+        console.error("Database connection failed", e);
       }
-
-      const { data: posts } = await supabasePublic.from('posts').select('*').order('created_at', { ascending: false });
-      if(posts) { allPosts = posts; renderPosts(allPosts); }
+      
+      try {
+        const res = await fetch(DATABASE_URL + "?action=getSettings");
+        settings = await res.json();
+        document.getElementById("tgChannel").href = settings.channel_link || "#";
+        document.getElementById("tgGroup").href = settings.group_link || "#";
+      } catch(e){}
     }
 
     function renderPosts(posts) {
       const grid = document.getElementById("postsGrid");
-      if (posts.length === 0) { grid.innerHTML = "<div style='grid-column: 1/-1; text-align:center; padding:100px 0; color:#777;'>No content found.</div>"; return; }
-      grid.innerHTML = posts.map(p => `
-        <div class="post-card" onclick="showDetail('${p.id}')">
-          <img src="${p.image_url}" alt="${p.name}">
-          <span class="category-tag">${p.category || 'Anime'}</span>
-          <div class="name">${p.name}</div>
-        </div>
-      `).join("");
-    }
-
-    function searchPosts() {
-      const term = document.getElementById("searchInput").value.toLowerCase();
-      renderPosts(allPosts.filter(p => p.name.toLowerCase().includes(term)));
-    }
-
-    function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
-
-    function showAllPosts() { toggleSidebar(); document.getElementById("gridTitle").innerHTML = "All <span>Anime Series</span>"; renderPosts(allPosts); }
-
-    function showSidebarSection(type) {
-      toggleSidebar();
-      if (type === "category") {
-        const categories = [...new Set(allPosts.map(p => p.category).filter(Boolean))];
-        showModal(`
-          <span class="close-modal" onclick="closeModal()">&times;</span>
-          <h3 style="margin-bottom:15px;">Categories</h3>
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            ${categories.map(cat => `<button style="margin: 4px 0;" onclick="filterByCategory('${cat}')">${cat}</button>`).join("")}
-          </div>
-        `);
-      } else if (type === "genre") {
-        const allGenres = allPosts.flatMap(p => (p.genres || "").split(/[,;\-_]/).map(g => g.trim()).filter(Boolean));
-        const uniqueGenres = [...new Set(allGenres)];
-        showModal(`
-          <span class="close-modal" onclick="closeModal()">&times;</span>
-          <h3 style="margin-bottom:15px;">Genres</h3>
-          <div style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto;">
-            ${uniqueGenres.map(g => `<button style="margin: 4px 0;" onclick="filterByGenre('${g}')">${g}</button>`).join("")}
-          </div>
-        `);
-      } else if (type === "az") {
-        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
-        showModal(`
-          <span class="close-modal" onclick="closeModal()">&times;</span>
-          <h3 style="margin-bottom:15px;">A2Z Filter</h3>
-          <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap:8px;">
-            ${letters.map(l => `<button style="width:100%; margin:0; padding:10px 0;" onclick="filterByLetter('${l}')">${l}</button>`).join("")}
-          </div>
-        `);
+      if (posts.length === 0) {
+        grid.innerHTML = "<div style='grid-column:1/-1; text-align:center; padding:50px;'>No anime found.</div>";
+        return;
       }
+      
+      grid.innerHTML = posts.map(p => {
+        const mediaSection = (p.image_url && p.image_url.trim().startsWith("http")) 
+          ? `<img src="${p.image_url}" alt="${p.name}">` 
+          : `<div class="fallback-box">
+               <div class="cat">${p.category}</div>
+               <div class="name-style">${p.name}</div>
+             </div>`;
+             
+        return `
+          <div class="post-card" onclick="showDetail('${p.id}')">
+            ${mediaSection}
+            <span class="category-tag">${p.category}</span>
+            <div class="title-text">${p.name}</div>
+          </div>
+        `;
+      }).join("");
     }
-
-    function filterByCategory(cat) { closeModal(); document.getElementById("gridTitle").innerHTML = `Category: <span>${cat}</span>`; renderPosts(allPosts.filter(p => p.category === cat)); }
-    function filterByGenre(genre) { closeModal(); document.getElementById("gridTitle").innerHTML = `Genre: <span>${genre}</span>`; renderPosts(allPosts.filter(p => (p.genres || "").toLowerCase().includes(genre.toLowerCase()))); }
-    function filterByLetter(letter) { closeModal(); document.getElementById("gridTitle").innerHTML = `Starting Letter: <span>${letter}</span>`; renderPosts(allPosts.filter(p => p.name.toUpperCase().startsWith(letter))); }
 
     async function showDetail(postId) {
+      const post = allPosts.find(p => p.id === postId);
+      if (!post) return;
+      
       document.getElementById("postsGrid").style.display = "none";
       document.getElementById("gridTitle").style.display = "none";
       document.getElementById("detailPage").classList.add("active");
+      
+      const mediaSection = (post.image_url && post.image_url.trim().startsWith("http")) 
+          ? `<img src="${post.image_url}" alt="${post.name}">` 
+          : `<div class="fallback-box" style="width:260px; border-radius:12px;">
+               <div class="cat">${post.category}</div>
+               <div class="name-style">${post.name}</div>
+             </div>`;
 
-      const post = allPosts.find(p => p.id === postId);
-      const { data: episodes } = await supabasePublic.from('episodes').select('*').eq('post_id', postId).order('episode_label', {ascending: true});
+      const epRes = await fetch(DATABASE_URL + `?action=getEpisodes&post_id=${postId}`);
+      const episodes = await epRes.json();
 
       document.getElementById("detailContent").innerHTML = `
         <div class="detail-header">
-          <img src="${post.image_url}">
+          ${mediaSection}
           <div class="detail-info">
             <h2>${post.name}</h2>
+            <p><strong>Category:</strong> ${post.category}</p>
             <p><strong>Genre:</strong> ${post.genres || "N/A"}</p>
             <p><strong>Release:</strong> ${post.release_date || "N/A"}</p>
+            <p><strong>Season:</strong> ${post.season || "N/A"}</p>
             <p><strong>Story:</strong> ${post.short_story || "N/A"}</p>
           </div>
         </div>
-        <h3 style="border-bottom:1px solid #222; padding-bottom:10px;">EPISODE LIST</h3>
-        <div class="episodes-grid">
-          ${episodes.map(ep => `
-            <button onclick="handleEpisode('${ep.play_link}', '${ep.short_link}', '${ep.original_link}')">${ep.episode_label}</button>
-          `).join("")}
+        <div class="episodes">
+          <h3>Episodes List</h3>
+          <div class="episodes-grid">
+            ${episodes.map(ep => `
+              <button onclick="handleEpisode('${ep.id}', '${post.name}', '${ep.episode_label}')">${ep.episode_label}</button>
+            `).join("")}
+          </div>
         </div>
       `;
+    }
+
+    function handleEpisode(epId, postName, epLabel) {
+      showModal(`
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>${postName}</h3>
+        <p>${epLabel}</p>
+        <button onclick="solveShortener('${epId}')"><i class="fa-solid fa-download"></i> Solve Shortener & Download</button>
+        <button onclick="openStreamingPrompt('${epId}')" style="background:#0088cc;"><i class="fa-solid fa-play"></i> Private Stream</button>
+        <button onclick="openPremiumPrompt('${epId}')" style="background:#00b359;"><i class="fa-solid fa-gem"></i> Premium Login Direct Route</button>
+      `);
+    }
+
+    async function solveShortener(epId) {
+      showModal(`<h3>Shortening Link...</h3><p>Connecting with server routing, please wait...</p>`);
+      try {
+        const res = await fetch(DATABASE_URL + `?action=getShortenedLink&ep_id=${epId}`);
+        const data = await res.json();
+        if (data.success) {
+          window.open(data.shortLink, "_blank");
+          closeModal();
+        } else {
+          alert("Error: " + data.error);
+          closeModal();
+        }
+      } catch (e) {
+        alert("Bypass configuration error.");
+        closeModal();
+      }
+    }
+
+    function openStreamingPrompt(epId) {
+      showModal(`
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Enter Player Password</h3>
+        <input type="text" id="playPassInput" placeholder="Enter global video key">
+        <button onclick="verifyPlayer('${epId}')">Authenticate & Play</button>
+      `);
+    }
+
+    async function verifyPlayer(epId) {
+      const pass = document.getElementById("playPassInput").value.trim();
+      const res = await fetch(DATABASE_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "verifyPlayer", password: pass, ep_id: epId })
+      });
+      const data = await res.json();
+      if(data.success) {
+        window.open(data.play_link, "_blank");
+        closeModal();
+      } else {
+        alert(data.error);
+      }
+    }
+
+    function openPremiumPrompt(epId) {
+      showModal(`
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Premium Login</h3>
+        <p>No advertisements, direct original download link</p>
+        <input type="email" id="premGmail" placeholder="Enter Gmail ID">
+        <input type="password" id="premPass" placeholder="Enter Password">
+        <button onclick="loginPremium('${epId}')">Login & Bypass</button>
+      `);
+    }
+
+    async function loginPremium(epId) {
+      const gmail = document.getElementById("premGmail").value.trim();
+      const pass = document.getElementById("premPass").value.trim();
+      
+      const res = await fetch(DATABASE_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "premiumLogin", username: gmail, password: pass })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const bypassRes = await fetch(DATABASE_URL, {
+          method: "POST",
+          body: JSON.stringify({ 
+            action: "premiumBypass", 
+            username: data.username, 
+            session_token: data.session_token, 
+            ep_id: epId 
+          })
+        });
+        const bypassData = await bypassRes.json();
+        if(bypassData.success) {
+          window.open(bypassData.original_link, "_blank");
+          closeModal();
+        } else {
+          alert(bypassData.error);
+        }
+      } else {
+        alert(data.error);
+      }
+    }
+
+    function openPaidRequestPrompt() {
+      toggleSidebar();
+      showModal(`
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3>Paid Request Unlock</h3>
+        <p>Enter the private code key provided by administrator</p>
+        <input type="text" id="paidKeyInput" placeholder="Enter key code">
+        <button onclick="unlockPaidRequest()">Unlock File</button>
+      `);
+    }
+
+    async function unlockPaidRequest() {
+      const pass = document.getElementById("paidKeyInput").value.trim();
+      const res = await fetch(DATABASE_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "resolvePaidRequest", password: pass })
+      });
+      const data = await res.json();
+      if(data.success) {
+        window.open(data.original_link, "_blank");
+        closeModal();
+      } else {
+        alert(data.error);
+      }
     }
 
     function showHome() {
       document.getElementById("postsGrid").style.display = "grid";
       document.getElementById("gridTitle").style.display = "block";
       document.getElementById("detailPage").classList.remove("active");
+      renderPosts(allPosts);
     }
 
-    function handleEpisode(playLink, shortLink, originalLink) {
-      showModal(`
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h3>Choose Option</h3>
-        <button onclick="openDownloadLink('${shortLink}', '${originalLink}')"><i class="fa-solid fa-download"></i> Download Episode</button>
-        <button onclick="playVideo('${playLink}')" style="background:#00b359;"><i class="fa-solid fa-play"></i> Stream Video (Requires Password)</button>
-      `);
+    function searchPosts() {
+      const term = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allPosts.filter(p => p.name.toLowerCase().includes(term) || p.genres.toLowerCase().includes(term));
+      renderPosts(filtered);
     }
 
-    // THIS FUNCTION HIDES THE ORIGINAL LINK FROM FREE USERS
-    async function openDownloadLink(shortLink, originalLink) {
-      const userEmail = localStorage.getItem('premium_email');
-      const localDevice = localStorage.getItem('device_id');
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("show");
+    }
 
-      if (userEmail && localDevice) {
-        const { data } = await supabasePublic.from('premium_users').select('*').eq('email', userEmail).single();
-        if (data && !data.is_banned && data.device_id === localDevice) {
-           window.open(originalLink, '_blank'); // PREMIUM USER GETS ORIGINAL LINK directly
-           closeModal();
-           return;
-        } 
+    function showSidebarSection(type) {
+      toggleSidebar();
+      if (type === "category") {
+        const categories = [...new Set(allPosts.map(p => p.category))];
+        showModal(`
+          <span class="close-modal" onclick="closeModal()">&times;</span>
+          <h3>Categories</h3>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+            ${categories.map(cat => `<button onclick="filterByCat('${cat}')">${cat}</button>`).join("")}
+          </div>
+        `);
+      } else if (type === "genre") {
+        const genres = [...new Set(allPosts.flatMap(p => p.genres.split(",").map(g => g.trim())))];
+        showModal(`
+          <span class="close-modal" onclick="closeModal()">&times;</span>
+          <h3>Genres</h3>
+          <div style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto; margin-top:20px;">
+            ${genres.map(g => `<button onclick="filterByGenre('${g}')">${g}</button>`).join("")}
+          </div>
+        `);
+      } else if (type === "az") {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        showModal(`
+          <span class="close-modal" onclick="closeModal()">&times;</span>
+          <h3>A2Z Filter</h3>
+          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:20px;">
+            ${letters.map(l => `<button onclick="filterByLetter('${l}')">${l}</button>`).join("")}
+          </div>
+        `);
       }
-      
-      window.open(shortLink, '_blank'); // FREE USER GETS SHORT LINK
+    }
+
+    function filterByCat(cat) {
       closeModal();
+      document.getElementById("gridTitle").innerHTML = `Category: <span>${cat}</span>`;
+      renderPosts(allPosts.filter(p => p.category === cat));
     }
 
-    async function playVideo(playLink) {
-      const userEmail = localStorage.getItem('premium_email');
-      const localDevice = localStorage.getItem('device_id');
-
-      if (userEmail && localDevice) {
-        const { data } = await supabasePublic.from('premium_users').select('*').eq('email', userEmail).single();
-        if (data && !data.is_banned && data.device_id === localDevice) {
-           window.open(playLink, '_blank'); 
-           closeModal();
-           return;
-        } else if (data && data.is_banned) {
-           alert("Your Premium Account has been BANNED for sharing with multiple users.");
-           localStorage.removeItem('premium_email');
-           closeModal();
-           return;
-        }
-      }
-
-      const pass = prompt("Enter Global Streaming Password:");
-      if (pass === settingsData.player_password) { window.open(playLink, '_blank'); } 
-      else if (pass) { alert("Incorrect Password!"); }
+    function filterByGenre(genre) {
       closeModal();
+      document.getElementById("gridTitle").innerHTML = `Genre: <span>${genre}</span>`;
+      renderPosts(allPosts.filter(p => p.genres.toLowerCase().includes(genre.toLowerCase())));
     }
 
-    function openPremiumLoginModal() {
-      if(localStorage.getItem('premium_email')) {
-        alert(`Logged in as ${localStorage.getItem('premium_email')}`);
-        return;
-      }
-      showModal(`
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h3 style="color:#ffd700;">Premium Login</h3>
-        <p style="color:#a1a1aa; font-size:13px; margin-bottom:15px;">Warning: Logging in with a shared account on a new device will permanently BAN the account.</p>
-        <input type="email" id="lEmail" placeholder="Email Address">
-        <input type="password" id="lPass" placeholder="Password">
-        <button onclick="processPremiumLogin()">Login via Secure Bypass</button>
-      `);
-    }
-
-    async function processPremiumLogin() {
-      const email = document.getElementById("lEmail").value.trim();
-      const pass = document.getElementById("lPass").value.trim();
-      
-      const { data, error } = await supabasePublic.from('premium_users').select('*').eq('email', email).eq('password', pass).single();
-      
-      if (!data) return alert("Wrong Email or Password!");
-      if (data.is_banned) return alert("Account has been BANNED for violating multiple device policy.");
-      if (new Date(data.expires_at) < new Date()) return alert("Premium validity has expired.");
-
-      let currentDevice = localStorage.getItem('device_id');
-      if (!currentDevice) {
-        currentDevice = generateUUID();
-        localStorage.setItem('device_id', currentDevice);
-      }
-
-      if (data.device_id && data.device_id !== currentDevice) {
-         await supabasePublic.from('premium_users').update({ is_banned: true }).eq('id', data.id);
-         alert("MULTIPLE DEVICES DETECTED! Account BANNED.");
-         closeModal();
-         return;
-      }
-
-      await supabasePublic.from('premium_users').update({ device_id: currentDevice }).eq('id', data.id);
-      localStorage.setItem('premium_email', email);
-      alert("Login Successful! You can watch Streams and Bypassed Links directly.");
+    function filterByLetter(l) {
       closeModal();
+      document.getElementById("gridTitle").innerHTML = `Starting with: <span>${l}</span>`;
+      renderPosts(allPosts.filter(p => p.name.toUpperCase().startsWith(l)));
     }
 
-    function showModal(html) { document.getElementById("modalContent").innerHTML = html; document.getElementById("modal").classList.add("active"); }
-    function closeModal() { document.getElementById("modal").classList.remove("active"); }
+    function showAllPosts() {
+      toggleSidebar();
+      showHome();
+    }
+
+    function showModal(html) {
+      const modal = document.getElementById("modal");
+      document.getElementById("modalContent").innerHTML = html;
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.remove("active");
+    }
 
     window.onload = loadApp;
   </script>
